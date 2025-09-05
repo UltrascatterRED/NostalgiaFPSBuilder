@@ -1,2 +1,7 @@
 ## Error Log -  ##
 ## Error Log -  ##
+## Error Log -  ##
+/usr/bin/ld: cannot find Debug.cpppp: No such file or directory
+collect2: error: ld returned 1 exit status
+## Error Log -  ##
+## Error Log -  ##
