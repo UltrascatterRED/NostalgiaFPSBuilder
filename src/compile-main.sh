@@ -2,5 +2,5 @@
 
 errlog=gcc-errors.log
 echo "## Error Log - $(timedatectl show -P RTCTimeUSec) ##" >> $errlog
-g++ GameStructs.cpp Debug.cpp Render.cpp EngineMain.cpp -lGL -lGLU -lglut -lm -o DoomEngine 2>> $errlog && echo "Compilation Successful!"
+g++ GameStructs.cpp Debug.cpp Render.cpp EngineMain.cpp -lGL -lGLU -lglut -lm -o NostalgiaFPS_Player 2>> $errlog && echo "Compilation Successful!"
 exit 0
