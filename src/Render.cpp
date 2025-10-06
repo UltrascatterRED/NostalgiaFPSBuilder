@@ -161,7 +161,7 @@ void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
       // Also looks kind of cool. Maybe turn into a shader effect or something
       if(x == x1 || x == x2-1 || y == by || y == ty-1)
       {
-        drawPixel(x, y, 7);
+        drawPixel(x, y, 9);
         continue;
       }
       // end debug
@@ -169,24 +169,38 @@ void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
     }
   }
 }
-int Walls[9][6] = 
+int Walls[][7] = 
 {
-	{-20, 100, 0, -20, 350, 0},
-	{20, 100, 0, 20, 350, 0},
-	{-80, 410, 0, -20, 350, 0},
-	{20, 350, 0, 80, 410, 0},
-	{-80, 410, 0, -80, 490, 0},
-	{80, 410, 0, 80, 490, 0},
-	{-80, 490, 0, -20, 550, 0},
-	{80, 490, 0, 20, 550, 0},
-	{-20, 550, 0, 20, 550, 0}
+	{-20, 100, 0, -20, 350, 0, 3},
+	{20, 100, 0, 20, 350, 0, 3},
+	{-80, 410, 0, -20, 350, 0, 3},
+	{20, 350, 0, 80, 410, 0, 3},
+	{-80, 490, 0, -180, 490, 0, 6},
+	{-80, 410, 0, -180, 410, 0, 6},
+	{-180, 490, 0, -180, 590, 0, 6},
+	{-180, 410, 0, -180, 310, 0, 6},
+	{-180, 590, 0, -380, 590, 0, 6},
+	{-180, 310, 0, -380, 310, 0, 6},
+	{-380, 590, 0, -380, 310, 0, 6},
+	{80, 410, 0, 80, 490, 0, 3},
+	{-80, 490, 0, -20, 550, 0, 3},
+	{80, 490, 0, 150, 560, 0, 1},
+	{20, 550, 0, 90, 620, 0, 1},
+	{150, 560, 0, 250, 560, 0, 1},
+	{90, 620, 0, 90, 720, 0, 1},
+	{250, 560, 0, 250, 720, 0, 1},
+	{130, 720, 0, 300, 720, 0, 5},
+	{300, 720, 0, 300, 870, 0, 5},
+	{90, 720, 0, 90, 870, 0, 5},
+	{90, 870, 0, 300, 870, 0, 5},
+	{-20, 550, 0, 20, 550, 0, 3}
 };
 // Each sub-array in Walls is one wall
 // FIELDS:
-// x1, y1, z1, x2, y2, z2
-int numFields = 6; // hardcoded for now; must update this manually
+// x1, y1, z1, x2, y2, z2, color
+int numFields = 7; // hardcoded for now; must update this manually
 // size in bytes / size of int / number of fields per wall = number of walls
-int numWalls = 9; // hardcoded for now; must update this manually
+int numWalls = 23; // hardcoded for now; must update this manually
 void sortWallsZOrder()
 {
   // Proximity of each wall to player. Calculated with Pythagorean Theorem.
@@ -336,7 +350,7 @@ void drawView()
       printf("[]--> SKIPPED WALL DRAW\n");
       continue; 
     }
-    drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], 6);
+    drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], Walls[i][6]);
   }
 
 }

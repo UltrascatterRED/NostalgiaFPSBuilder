@@ -154,3 +154,15 @@ Render.cpp:243:37: note: possible fix: dereference with '*'
 ## Error Log - Mon 2025-10-06 15:10:37 EDT ##
 ## Error Log - Mon 2025-10-06 15:16:08 EDT ##
 ## Error Log - Mon 2025-10-06 15:30:23 EDT ##
+## Error Log - Mon 2025-10-06 15:43:42 EDT ##
+## Error Log - Mon 2025-10-06 15:44:34 EDT ##
+## Error Log - Mon 2025-10-06 16:01:46 EDT ##
+Render.cpp:190:1: error: too many initializers for 'int [9][7]'
+  190 | };
+      | ^
+## Error Log - Mon 2025-10-06 16:02:09 EDT ##
+Render.cpp:189:1: error: too many initializers for 'int [9][7]'
+  189 | };
+      | ^
+## Error Log - Mon 2025-10-06 16:02:51 EDT ##
+## Error Log - Mon 2025-10-06 16:20:31 EDT ##
