@@ -5,3 +5,151 @@
 collect2: error: ld returned 1 exit status
 ## Error Log -  ##
 ## Error Log -  ##
+## Error Log - Sun 2025-09-07 20:16:04 EDT ##
+## Error Log - Sun 2025-10-05 19:38:51 EDT ##
+## Error Log - Sun 2025-10-05 19:43:43 EDT ##
+## Error Log - Sun 2025-10-05 19:45:11 EDT ##
+## Error Log - Sun 2025-10-05 20:12:35 EDT ##
+Render.cpp:173:1: error: expected ',' or ';' before 'void'
+  173 | void drawView()
+      | ^~~~
+## Error Log - Sun 2025-10-05 20:13:10 EDT ##
+Render.cpp:173:1: error: expected ',' or ';' before 'void'
+  173 | void drawView()
+      | ^~~~
+## Error Log - Sun 2025-10-05 20:14:39 EDT ##
+Render.cpp:173:1: error: expected ',' or ';' before 'void'
+  173 | void drawView()
+      | ^~~~
+## Error Log - Sun 2025-10-05 20:15:08 EDT ##
+Render.cpp:173:1: error: expected ',' or ';' before 'void'
+  173 | void drawView()
+      | ^~~~
+## Error Log - Sun 2025-10-05 20:16:11 EDT ##
+## Error Log - Sun 2025-10-05 20:19:29 EDT ##
+## Error Log - Sun 2025-10-05 20:23:54 EDT ##
+## Error Log - Sun 2025-10-05 20:24:39 EDT ##
+## Error Log - Sun 2025-10-05 20:36:01 EDT ##
+## Error Log - Sun 2025-10-05 20:36:53 EDT ##
+## Error Log - Sun 2025-10-05 20:40:16 EDT ##
+## Error Log - Sun 2025-10-05 20:44:17 EDT ##
+## Error Log - Sun 2025-10-05 20:47:59 EDT ##
+## Error Log - Sun 2025-10-05 20:52:55 EDT ##
+## Error Log - Sun 2025-10-05 20:53:19 EDT ##
+## Error Log - Sun 2025-10-05 20:56:23 EDT ##
+## Error Log - Sun 2025-10-05 21:01:04 EDT ##
+## Error Log - Sun 2025-10-05 21:03:10 EDT ##
+## Error Log - Mon 2025-10-06 11:05:56 EDT ##
+## Error Log - Mon 2025-10-06 11:16:15 EDT ##
+## Error Log - Mon 2025-10-06 11:43:01 EDT ##
+## Error Log - Mon 2025-10-06 11:43:38 EDT ##
+## Error Log - Mon 2025-10-06 11:44:21 EDT ##
+## Error Log - Mon 2025-10-06 11:44:25 EDT ##
+## Error Log - Mon 2025-10-06 11:53:52 EDT ##
+## Error Log - Mon 2025-10-06 12:20:09 EDT ##
+## Error Log - Mon 2025-10-06 12:20:29 EDT ##
+## Error Log - Mon 2025-10-06 12:24:22 EDT ##
+## Error Log - Mon 2025-10-06 12:24:46 EDT ##
+## Error Log - Mon 2025-10-06 12:25:33 EDT ##
+## Error Log - Mon 2025-10-06 12:48:24 EDT ##
+Render.cpp:162:5: error: declaration of 'Walls' as multidimensional array must have bounds for all dimensions except the first
+  162 | int Walls[][] =
+      |     ^~~~~
+Render.cpp: In function 'void sortWallsZOrder()':
+Render.cpp:188:18: error: 'Walls' was not declared in this scope
+  188 |     int wallX = (Walls[i*numFields] + Walls[i*numFields+3])/2;
+      |                  ^~~~~
+Render.cpp:212:24: error: 'Walls' was not declared in this scope
+  212 |           wallSwp[k] = Walls[j][k];
+      |                        ^~~~~
+Render.cpp: In function 'void drawView()':
+Render.cpp:238:18: error: 'Walls' was not declared in this scope
+  238 |       wallX[0] = Walls[i*numFields];
+      |                  ^~~~~
+## Error Log - Mon 2025-10-06 12:49:28 EDT ##
+Render.cpp: In function 'void sortWallsZOrder()':
+Render.cpp:188:37: error: invalid operands of types 'int [6]' and 'int [6]' to binary 'operator+'
+  188 |     int wallX = (Walls[i*numFields] + Walls[i*numFields+3])/2;
+      |                  ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~
+      |                                   |                      |
+      |                                   int [6]                int [6]
+Render.cpp:189:39: error: invalid operands of types 'int [6]' and 'int [6]' to binary 'operator+'
+  189 |     int wallY = (Walls[i*numFields+1] + Walls[i*numFields+4])/2;
+      |                  ~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~
+      |                                     |                      |
+      |                                     int [6]                int [6]
+Render.cpp: In function 'void drawView()':
+Render.cpp:238:35: error: invalid conversion from 'int*' to 'int' [-fpermissive]
+  238 |       wallX[0] = Walls[i*numFields];
+      |                  ~~~~~~~~~~~~~~~~~^
+      |                                   |
+      |                                   int*
+Render.cpp:238:35: note: possible fix: dereference with '*'
+  238 |       wallX[0] = Walls[i*numFields];
+      |                  ~~~~~~~~~~~~~~~~~^
+      |                  *
+Render.cpp:239:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
+  239 |       wallY[0] = Walls[i*numFields+1];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                                     |
+      |                                     int*
+Render.cpp:239:37: note: possible fix: dereference with '*'
+  239 |       wallY[0] = Walls[i*numFields+1];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                  *
+Render.cpp:240:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
+  240 |       wallZ[0] = Walls[i*numFields+2];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                                     |
+      |                                     int*
+Render.cpp:240:37: note: possible fix: dereference with '*'
+  240 |       wallZ[0] = Walls[i*numFields+2];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                  *
+Render.cpp:241:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
+  241 |       wallX[1] = Walls[i*numFields+3];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                                     |
+      |                                     int*
+Render.cpp:241:37: note: possible fix: dereference with '*'
+  241 |       wallX[1] = Walls[i*numFields+3];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                  *
+Render.cpp:242:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
+  242 |       wallY[1] = Walls[i*numFields+4];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                                     |
+      |                                     int*
+Render.cpp:242:37: note: possible fix: dereference with '*'
+  242 |       wallY[1] = Walls[i*numFields+4];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                  *
+Render.cpp:243:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
+  243 |       wallZ[1] = Walls[i*numFields+5];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                                     |
+      |                                     int*
+Render.cpp:243:37: note: possible fix: dereference with '*'
+  243 |       wallZ[1] = Walls[i*numFields+5];
+      |                  ~~~~~~~~~~~~~~~~~~~^
+      |                  *
+## Error Log - Mon 2025-10-06 12:54:43 EDT ##
+## Error Log - Mon 2025-10-06 12:55:52 EDT ##
+## Error Log - Mon 2025-10-06 12:58:45 EDT ##
+## Error Log - Mon 2025-10-06 13:00:18 EDT ##
+## Error Log - Mon 2025-10-06 14:13:34 EDT ##
+## Error Log - Mon 2025-10-06 14:14:34 EDT ##
+## Error Log - Mon 2025-10-06 14:17:25 EDT ##
+## Error Log - Mon 2025-10-06 14:20:27 EDT ##
+## Error Log - Mon 2025-10-06 14:21:20 EDT ##
+## Error Log - Mon 2025-10-06 14:21:55 EDT ##
+## Error Log - Mon 2025-10-06 14:24:01 EDT ##
+## Error Log - Mon 2025-10-06 14:28:03 EDT ##
+## Error Log - Mon 2025-10-06 14:29:29 EDT ##
+## Error Log - Mon 2025-10-06 14:29:40 EDT ##
+## Error Log - Mon 2025-10-06 14:31:42 EDT ##
+## Error Log - Mon 2025-10-06 14:45:31 EDT ##
+## Error Log - Mon 2025-10-06 14:50:53 EDT ##
+## Error Log - Mon 2025-10-06 15:04:28 EDT ##
+## Error Log - Mon 2025-10-06 15:10:37 EDT ##
+## Error Log - Mon 2025-10-06 15:16:08 EDT ##

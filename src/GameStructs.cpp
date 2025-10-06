@@ -57,8 +57,8 @@ void init()
     TrigVals.cos[i] = cos(i/180.0 * M_PI);
   }
   // initialize player character state
-  Player.x = 70;
-  Player.y = -50;
+  Player.x = 0;
+  Player.y = 0;
   Player.z = 20;
   Player.angle = 0;
 }
