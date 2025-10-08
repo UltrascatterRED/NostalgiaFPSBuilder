@@ -22,8 +22,8 @@ unsigned char LOOK_LEFT = ',';
 unsigned char LOOK_RIGHT = '.';
 unsigned char FLY_UP = 'e';
 unsigned char FLY_DOWN = 'q';
-
-// Instantiate game structs (from GameStructs.h)
+// Elapsed time since Level Player started
+double globalElapsedTime = 0;
 
 void execInputsDebug()
 {
@@ -66,15 +66,20 @@ void execInputsDebug()
 void execInputs()
 {
   // misc input parameters
-  int lookSpeed = 4; // speed of looking left/right
-  int moveSpeed = 10; // speed of moving around the environment
-  int flySpeed = 4; // speed of flying up/down  
+  int inputThrottle = 50; // time (ms) taken per input refresh; used to enforce time-bound input, as opposed to frame-bound
+  int deltaBft = Bft.frame1 - Bft.frame2; // time since last frame draw
+  int lookSpeed = 6; // speed of looking left/right (degrees per inputThrottle)
+  int moveSpeed = 10; // speed of moving around the environment (units per inputThrottle)
+  int flySpeed = 4; // speed of flying up/down (units per inputThrottle)
   // deltaX and deltaY represent the player's absolute displacement
   // based on what direction they are looking/moving in. Used to
   // greatly simplify movement calculation.
-  int deltaX = TrigVals.sin[Player.angle] * moveSpeed;
-  int deltaY = TrigVals.cos[Player.angle] * moveSpeed;
-
+  // Output of equation in () is true distance to offset by, adjusted for frame draw time.
+  // Typecast to double for ensured accuracy pre-rounding
+  int deltaX = TrigVals.sin[Player.angle] * round((double)moveSpeed*(double)deltaBft/(double)inputThrottle);
+  int deltaY = TrigVals.cos[Player.angle] * round((double)moveSpeed*(double)deltaBft/(double)inputThrottle);
+  int deltaAngle = round((double)lookSpeed*(double)deltaBft/(double)inputThrottle); 
+  int deltaZ = round((double)flySpeed*(double)deltaBft/(double)inputThrottle);
   // move forward; represented by positive change in both deltaX and
   // deltaY
   if(KeyState.moveF == 1)
@@ -107,7 +112,7 @@ void execInputs()
   }
   if(KeyState.lookL == 1)
   {
-    Player.angle -= lookSpeed;
+    Player.angle -= deltaAngle;
     if(Player.angle < 0)
     {
       Player.angle += 360;
@@ -115,7 +120,7 @@ void execInputs()
   }
   if(KeyState.lookR == 1)
   {
-    Player.angle += lookSpeed;
+    Player.angle += deltaAngle;
     if(Player.angle > 359)
     {
       Player.angle -= 360;
@@ -123,36 +128,33 @@ void execInputs()
   }
   if(KeyState.flyU == 1)
   {
-    Player.z -= flySpeed;
+    Player.z -= deltaZ;
   }
   if(KeyState.flyD == 1)
   {
-    Player.z += flySpeed;
+    Player.z += deltaZ;
   }
 
 }
 
 void displayFrame()
 {
-  // check if it's time to draw next frame
-  if(Bft.frame1-Bft.frame2 >= MSPF)
-  {
+  // time since current frame was drawn, in milliseconds
+  int currentFrameLifetime = Bft.frame1 - Bft.frame2;
     clearBackground();
     execInputs();
     // execInputsDebug(); // debug (duh)
     //drawTest(); // debug; must comment out drawView() to use 
     drawView();
-    // frame2 holds elapsed time (ms) at which last frame was drawn;
-    // frame2 is continuously used to calculate when to draw next frame
+    // frame2 holds elapsed time (ms) at which last frame was drawn
     Bft.frame2 = Bft.frame1;
     glutSwapBuffers();
     glutReshapeWindow(GL_WIN_WIDTH, GL_WIN_HEIGHT); // prevents window scaling
-  }
   // time elapsed in milliseconds since engine started
   Bft.frame1 = glutGet(GLUT_ELAPSED_TIME);
   glutPostRedisplay();
   // debug
-  //printFPS(&Bft);
+  printFPS(&Bft);
 }
 
 // glut callback function; checks if any new keys have been pressed down,

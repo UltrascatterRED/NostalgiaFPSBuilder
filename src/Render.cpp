@@ -309,7 +309,7 @@ void drawView()
 
     // clip offscreen portion of wall (aka skip rendering it)
     // skip drawing wall if entirely offscreen
-    if(wallY[0] < 1 && wallY[1] < 1) { printf("[]--> SKIPPED WALL DRAW\n"); continue; }
+    if(wallY[0] < 1 && wallY[1] < 1) { /*printf("[]--> SKIPPED WALL DRAW\n");*/ continue; }
     // clip point 1 of wall if offscreen
     if(wallY[0] < 1)
     {
@@ -347,7 +347,7 @@ void drawView()
     // skip if wall outside of camera view
     if((wallX[0] < 1 && wallX[1] < 1) || (wallX[0] > SCREEN_WIDTH-1 && wallX[1] > SCREEN_WIDTH-1)) 
     {
-      printf("[]--> SKIPPED WALL DRAW\n");
+      //printf("[]--> SKIPPED WALL DRAW\n");
       continue; 
     }
     drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], Walls[i][6]);

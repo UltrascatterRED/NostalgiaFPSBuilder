@@ -11,7 +11,7 @@
 // True width and height of the output window in monitor pixels
 #define GL_WIN_WIDTH    (SCREEN_WIDTH*PIXEL_SCALE)
 #define GL_WIN_HEIGHT   (SCREEN_HEIGHT*PIXEL_SCALE)
-#define MSPF            50      // milliseconds per frame; 1000/MSPF = FPS
+#define MSPF            50      // milliseconds per frame, used to intentionally limit frame rate; 1000/MSPF = FPS
 
 void drawPixel(int x, int y, int color);
 void clearBackground();
