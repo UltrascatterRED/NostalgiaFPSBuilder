@@ -1,0 +1,16 @@
+[SECTORS]
+sector1: 0 20
+sector2: 0 40
+sector3: 0 10
+[WALLS]
+20 20 20 300 5 sector1
+-20 20 -20 300 5 sector1
+-20 20 20 20 5 sector1
+-20 300 20 300 5 sector1
+-20 300 -70 350 7 sector2
+20 300 70 350 7 sector2
+-70 350 70 350 7 sector2
+-20 400 20 400 3 sector3
+-20 400 -20 450 3 sector3
+20 400 20 450 3 sector3
+-20 450 20 450 3 sector3

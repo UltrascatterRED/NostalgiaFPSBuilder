@@ -1,176 +1,77 @@
-## Error Log -  ##
-## Error Log -  ##
-## Error Log -  ##
-/usr/bin/ld: cannot find Debug.cpppp: No such file or directory
-collect2: error: ld returned 1 exit status
-## Error Log -  ##
-## Error Log -  ##
-## Error Log - Sun 2025-09-07 20:16:04 EDT ##
-## Error Log - Sun 2025-10-05 19:38:51 EDT ##
-## Error Log - Sun 2025-10-05 19:43:43 EDT ##
-## Error Log - Sun 2025-10-05 19:45:11 EDT ##
-## Error Log - Sun 2025-10-05 20:12:35 EDT ##
-Render.cpp:173:1: error: expected ',' or ';' before 'void'
-  173 | void drawView()
-      | ^~~~
-## Error Log - Sun 2025-10-05 20:13:10 EDT ##
-Render.cpp:173:1: error: expected ',' or ';' before 'void'
-  173 | void drawView()
-      | ^~~~
-## Error Log - Sun 2025-10-05 20:14:39 EDT ##
-Render.cpp:173:1: error: expected ',' or ';' before 'void'
-  173 | void drawView()
-      | ^~~~
-## Error Log - Sun 2025-10-05 20:15:08 EDT ##
-Render.cpp:173:1: error: expected ',' or ';' before 'void'
-  173 | void drawView()
-      | ^~~~
-## Error Log - Sun 2025-10-05 20:16:11 EDT ##
-## Error Log - Sun 2025-10-05 20:19:29 EDT ##
-## Error Log - Sun 2025-10-05 20:23:54 EDT ##
-## Error Log - Sun 2025-10-05 20:24:39 EDT ##
-## Error Log - Sun 2025-10-05 20:36:01 EDT ##
-## Error Log - Sun 2025-10-05 20:36:53 EDT ##
-## Error Log - Sun 2025-10-05 20:40:16 EDT ##
-## Error Log - Sun 2025-10-05 20:44:17 EDT ##
-## Error Log - Sun 2025-10-05 20:47:59 EDT ##
-## Error Log - Sun 2025-10-05 20:52:55 EDT ##
-## Error Log - Sun 2025-10-05 20:53:19 EDT ##
-## Error Log - Sun 2025-10-05 20:56:23 EDT ##
-## Error Log - Sun 2025-10-05 21:01:04 EDT ##
-## Error Log - Sun 2025-10-05 21:03:10 EDT ##
-## Error Log - Mon 2025-10-06 11:05:56 EDT ##
-## Error Log - Mon 2025-10-06 11:16:15 EDT ##
-## Error Log - Mon 2025-10-06 11:43:01 EDT ##
-## Error Log - Mon 2025-10-06 11:43:38 EDT ##
-## Error Log - Mon 2025-10-06 11:44:21 EDT ##
-## Error Log - Mon 2025-10-06 11:44:25 EDT ##
-## Error Log - Mon 2025-10-06 11:53:52 EDT ##
-## Error Log - Mon 2025-10-06 12:20:09 EDT ##
-## Error Log - Mon 2025-10-06 12:20:29 EDT ##
-## Error Log - Mon 2025-10-06 12:24:22 EDT ##
-## Error Log - Mon 2025-10-06 12:24:46 EDT ##
-## Error Log - Mon 2025-10-06 12:25:33 EDT ##
-## Error Log - Mon 2025-10-06 12:48:24 EDT ##
-Render.cpp:162:5: error: declaration of 'Walls' as multidimensional array must have bounds for all dimensions except the first
-  162 | int Walls[][] =
+## Error Log - Thu 2025-10-16 10:46:10 EDT ##
+Render.cpp:172:5: error: conflicting declaration ‘int Walls [][7]’
+  172 | int Walls[][7] =
       |     ^~~~~
-Render.cpp: In function 'void sortWallsZOrder()':
-Render.cpp:188:18: error: 'Walls' was not declared in this scope
-  188 |     int wallX = (Walls[i*numFields] + Walls[i*numFields+3])/2;
-      |                  ^~~~~
-Render.cpp:212:24: error: 'Walls' was not declared in this scope
-  212 |           wallSwp[k] = Walls[j][k];
-      |                        ^~~~~
-Render.cpp: In function 'void drawView()':
-Render.cpp:238:18: error: 'Walls' was not declared in this scope
-  238 |       wallX[0] = Walls[i*numFields];
-      |                  ^~~~~
-## Error Log - Mon 2025-10-06 12:49:28 EDT ##
-Render.cpp: In function 'void sortWallsZOrder()':
-Render.cpp:188:37: error: invalid operands of types 'int [6]' and 'int [6]' to binary 'operator+'
-  188 |     int wallX = (Walls[i*numFields] + Walls[i*numFields+3])/2;
-      |                  ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~
-      |                                   |                      |
-      |                                   int [6]                int [6]
-Render.cpp:189:39: error: invalid operands of types 'int [6]' and 'int [6]' to binary 'operator+'
-  189 |     int wallY = (Walls[i*numFields+1] + Walls[i*numFields+4])/2;
-      |                  ~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~
-      |                                     |                      |
-      |                                     int [6]                int [6]
-Render.cpp: In function 'void drawView()':
-Render.cpp:238:35: error: invalid conversion from 'int*' to 'int' [-fpermissive]
-  238 |       wallX[0] = Walls[i*numFields];
-      |                  ~~~~~~~~~~~~~~~~~^
-      |                                   |
-      |                                   int*
-Render.cpp:238:35: note: possible fix: dereference with '*'
-  238 |       wallX[0] = Walls[i*numFields];
-      |                  ~~~~~~~~~~~~~~~~~^
-      |                  *
-Render.cpp:239:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
-  239 |       wallY[0] = Walls[i*numFields+1];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                                     |
-      |                                     int*
-Render.cpp:239:37: note: possible fix: dereference with '*'
-  239 |       wallY[0] = Walls[i*numFields+1];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                  *
-Render.cpp:240:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
-  240 |       wallZ[0] = Walls[i*numFields+2];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                                     |
-      |                                     int*
-Render.cpp:240:37: note: possible fix: dereference with '*'
-  240 |       wallZ[0] = Walls[i*numFields+2];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                  *
-Render.cpp:241:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
-  241 |       wallX[1] = Walls[i*numFields+3];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                                     |
-      |                                     int*
-Render.cpp:241:37: note: possible fix: dereference with '*'
-  241 |       wallX[1] = Walls[i*numFields+3];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                  *
-Render.cpp:242:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
-  242 |       wallY[1] = Walls[i*numFields+4];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                                     |
-      |                                     int*
-Render.cpp:242:37: note: possible fix: dereference with '*'
-  242 |       wallY[1] = Walls[i*numFields+4];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                  *
-Render.cpp:243:37: error: invalid conversion from 'int*' to 'int' [-fpermissive]
-  243 |       wallZ[1] = Walls[i*numFields+5];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                                     |
-      |                                     int*
-Render.cpp:243:37: note: possible fix: dereference with '*'
-  243 |       wallZ[1] = Walls[i*numFields+5];
-      |                  ~~~~~~~~~~~~~~~~~~~^
-      |                  *
-## Error Log - Mon 2025-10-06 12:54:43 EDT ##
-## Error Log - Mon 2025-10-06 12:55:52 EDT ##
-## Error Log - Mon 2025-10-06 12:58:45 EDT ##
-## Error Log - Mon 2025-10-06 13:00:18 EDT ##
-## Error Log - Mon 2025-10-06 14:13:34 EDT ##
-## Error Log - Mon 2025-10-06 14:14:34 EDT ##
-## Error Log - Mon 2025-10-06 14:17:25 EDT ##
-## Error Log - Mon 2025-10-06 14:20:27 EDT ##
-## Error Log - Mon 2025-10-06 14:21:20 EDT ##
-## Error Log - Mon 2025-10-06 14:21:55 EDT ##
-## Error Log - Mon 2025-10-06 14:24:01 EDT ##
-## Error Log - Mon 2025-10-06 14:28:03 EDT ##
-## Error Log - Mon 2025-10-06 14:29:29 EDT ##
-## Error Log - Mon 2025-10-06 14:29:40 EDT ##
-## Error Log - Mon 2025-10-06 14:31:42 EDT ##
-## Error Log - Mon 2025-10-06 14:45:31 EDT ##
-## Error Log - Mon 2025-10-06 14:50:53 EDT ##
-## Error Log - Mon 2025-10-06 15:04:28 EDT ##
-## Error Log - Mon 2025-10-06 15:10:37 EDT ##
-## Error Log - Mon 2025-10-06 15:16:08 EDT ##
-## Error Log - Mon 2025-10-06 15:30:23 EDT ##
-## Error Log - Mon 2025-10-06 15:43:42 EDT ##
-## Error Log - Mon 2025-10-06 15:44:34 EDT ##
-## Error Log - Mon 2025-10-06 16:01:46 EDT ##
-Render.cpp:190:1: error: too many initializers for 'int [9][7]'
-  190 | };
-      | ^
-## Error Log - Mon 2025-10-06 16:02:09 EDT ##
-Render.cpp:189:1: error: too many initializers for 'int [9][7]'
-  189 | };
-      | ^
-## Error Log - Mon 2025-10-06 16:02:51 EDT ##
-## Error Log - Mon 2025-10-06 16:20:31 EDT ##
-## Error Log - Mon 2025-10-06 16:24:28 EDT ##
-## Error Log - Mon 2025-10-06 16:25:07 EDT ##
-## Error Log - Wed 2025-10-08 11:07:56 EDT ##
-## Error Log - Wed 2025-10-08 11:27:09 EDT ##
-## Error Log - Wed 2025-10-08 11:54:14 EDT ##
-## Error Log - Wed 2025-10-08 11:56:27 EDT ##
-## Error Log - Wed 2025-10-08 11:56:59 EDT ##
-## Error Log - Wed 2025-10-08 11:57:39 EDT ##
+In file included from Render.h:4,
+                 from Render.cpp:4:
+GameStructs.h:64:13: note: previous declaration as ‘wall Walls [1000]’
+   64 | extern wall Walls[MAX_WALLS];
+      |             ^~~~~
+Render.cpp: In function ‘void sortWallsZOrder()’:
+Render.cpp:212:38: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  212 |                 int wallX = (Walls[i][0] + Walls[i][3])/2;
+      |                                      ^
+Render.cpp:212:52: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  212 |                 int wallX = (Walls[i][0] + Walls[i][3])/2;
+      |                                                    ^
+Render.cpp:213:38: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  213 |                 int wallY = (Walls[i][1] + Walls[i][4])/2;
+      |                                      ^
+Render.cpp:213:52: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  213 |                 int wallY = (Walls[i][1] + Walls[i][4])/2;
+      |                                                    ^
+Render.cpp:236:59: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  236 |                                         wallSwp = Walls[j][k];
+      |                                                           ^
+Render.cpp:237:25: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  237 |                 Walls[j][k] = Walls[j+1][k];
+      |                         ^
+Render.cpp:237:41: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  237 |                 Walls[j][k] = Walls[j+1][k];
+      |                                         ^
+Render.cpp:238:27: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  238 |                 Walls[j+1][k] = wallSwp;
+      |                           ^
+Render.cpp: In function ‘void drawView()’:
+Render.cpp:273:36: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  273 |                 wallX[0] = Walls[i][0];
+      |                                    ^
+Render.cpp:274:36: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  274 |                 wallY[0] = Walls[i][1];
+      |                                    ^
+Render.cpp:275:36: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  275 |                 wallZ[0] = Walls[i][2];
+      |                                    ^
+Render.cpp:276:36: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  276 |                 wallX[1] = Walls[i][3];
+      |                                    ^
+Render.cpp:277:36: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  277 |                 wallY[1] = Walls[i][4];
+      |                                    ^
+Render.cpp:278:36: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  278 |                 wallZ[1] = Walls[i][5];
+      |                                    ^
+Render.cpp:353:94: error: no match for ‘operator[]’ (operand types are ‘wall’ and ‘int’)
+  353 |                 drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], Walls[i][6]);
+      |                                                                                              ^
+EngineMain.cpp: In function ‘int main(int, char**)’:
+EngineMain.cpp:213:9: error: expected ‘,’ or ‘;’ before ‘loadLevel’
+  213 |         loadLevel(levelFile);
+      |         ^~~~~~~~~
+## Error Log - Thu 2025-10-16 10:53:34 EDT ##
+EngineMain.cpp: In function ‘int main(int, char**)’:
+EngineMain.cpp:213:9: error: expected ‘,’ or ‘;’ before ‘loadLevel’
+  213 |         loadLevel(levelFile);
+      |         ^~~~~~~~~
+## Error Log - Thu 2025-10-16 10:54:15 EDT ##
+## Error Log - Thu 2025-10-16 10:55:37 EDT ##
+## Error Log - Thu 2025-10-16 11:01:46 EDT ##
+LevelFileHandling.cpp: In function ‘void loadLevel(char*)’:
+LevelFileHandling.cpp:52:25: error: ‘hasSectorheader’ was not declared in this scope; did you mean ‘hasSectorHeader’?
+   52 |                         hasSectorheader = true;
+      |                         ^~~~~~~~~~~~~~~
+      |                         hasSectorHeader
+## Error Log - Thu 2025-10-16 11:02:12 EDT ##
+## Error Log - Thu 2025-10-16 11:08:18 EDT ##
+## Error Log - Thu 2025-10-16 11:13:27 EDT ##
+## Error Log - Thu 2025-10-16 11:13:50 EDT ##
