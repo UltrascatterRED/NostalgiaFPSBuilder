@@ -40,8 +40,9 @@ typedef struct
 	int topZ; // z location of top edge
 	int centerX; // x coord of sector's center
 	int centerY; // y coord of sector's center
-	int distanceFromPlayer; // used to determine onscreen draw order of sectors
-	bool isPrism; // whether or not this sector is a valid prism; used to determine whether to draw floors/ceilings
+	int playerProximity; // used to determine onscreen draw order of sectors
+	// sector must have AT LEAST 2 walls to draw valid caps
+	bool hasCaps; // used to determine whether to draw floors/ceilings (aka sector "caps")
 }sector;
 
 // wall-specific information (all other info handled by struct sector)

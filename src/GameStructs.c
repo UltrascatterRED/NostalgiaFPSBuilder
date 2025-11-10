@@ -48,7 +48,8 @@ trigVals TrigVals = {
 	} 
 };
 player Player = { 0, 0, 0, 0 }; // position (0, 0, 0) with looking angle of 0
-
+wall Walls[MAX_WALLS];
+sector Sectors[MAX_SECTORS];
 void init()
 {
 	// compute sin/cos values and store in TrigVals

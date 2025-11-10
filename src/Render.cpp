@@ -2,6 +2,7 @@
 #include <math.h>
 #include <GL/glut.h>
 #include "Render.h"
+#include "GameStructs.h"
 
 void drawPixel(int x, int y, int color)
 {
@@ -216,8 +217,6 @@ void sortOldWallsZOrder()
 		int b = wallY - Player.y;
 		proximity[i] = sqrt((a*a) + (b*b));
 	}
-	// NOTE: do not implement this until walls are more portable. Sorting an int array
-	//			 in chunks of 6 elements is a mainainability nightmare
 	// sort walls here
 	// bubble sort probably sucks for this, but easier to implement quickly
 	double proxSwp;
@@ -228,15 +227,15 @@ void sortOldWallsZOrder()
 		{
 			if(proximity[j] < proximity[j+1])
 			{
-	proxSwp = proximity[j];
-	proximity[j] = proximity[j+1];
-	proximity[j+1] = proxSwp;
-	for (int k = 0; k < numFields; k++)
-	{
+				proxSwp = proximity[j];
+				proximity[j] = proximity[j+1];
+				proximity[j+1] = proxSwp;
+				for (int k = 0; k < numFields; k++)
+				{
 					wallSwp = OldWalls[j][k];
-		OldWalls[j][k] = OldWalls[j+1][k];
-		OldWalls[j+1][k] = wallSwp;
-	}	
+					OldWalls[j][k] = OldWalls[j+1][k];
+					OldWalls[j+1][k] = wallSwp;
+				}	
 			}
 		}
 	}
