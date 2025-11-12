@@ -3,6 +3,43 @@
 #include <GL/glut.h>
 #include "Render.h"
 #include "GameStructs.h"
+#include "LevelFileHandling.h"
+
+// DEV NOTE: Declare this variable in header file
+bool drawnPixels[SCREEN_WIDTH][SCREEN_HEIGHT] = {false};
+
+// given a parent sector reference and a wall pointer buffer,
+// retrieves the child walls for that sector and writes their
+// pointers to said buffer.
+void retrieveChildWalls(sector* parent, wall* children[])
+{
+    int returnIdx = 0;
+    for(int i = 0; i < numWalls; i++)
+    {
+        if(Walls[i].parentSector == parent)
+        {
+            children[returnIdx] = &Walls[i];
+            returnIdx++;
+        }
+    }
+}
+// given the old memory location and new/current memory
+// location of a sector, updates all children of the sector
+// to point to the new memory location, thus preserving
+// sector-wall links.
+//
+// This function assumes the old location pointer is
+// correct; the function will fail otherwise.
+void updateWallParentSector(sector* oldLoc, sector* newLoc)
+{
+    wall* children[newLoc->numChildren];
+    // walls still reference old location
+    retrieveChildWalls(oldLoc, children);
+    for(int i = 0; i < newLoc->numChildren; i++)
+    {
+        children[i]->parentSector = newLoc;
+    }
+}
 
 void drawPixel(int x, int y, int color)
 {
@@ -98,9 +135,6 @@ void clipBehindCamera(int *x1, int *y1, int *z1, int x2, int y2, int z2)
 
 // draws a singular wall on the screen. All coordinate values handled
 // by this function are in SCREEN SPACE, not 3D space.
-// DEV NOTE: Refactor this function to handle negative delta values.
-//					 This will make all walls drawable in one pass, regardless
-//					 of which side is facing the player camera (aka no more culling)
 void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
 {
 	// debug
@@ -202,12 +236,15 @@ int OldWalls[][7] =
 int numFields = 7; // hardcoded for now; must update this manually
 // size in bytes / size of int / number of fields per wall = number of walls
 int numOldWalls = 23; // hardcoded for now; must update this manually
-void sortOldWallsZOrder()
+
+// sort the child walls of the input parent sector relative to the player
+// DEV NOTE (11-10-25): Major refactor of this function ongoing
+void sortOldWallsZOrder(sector* parent)
 {
 	// Proximity of each wall to player. Calculated with Pythagorean Theorem.
 	// Used to sort walls by draw order.
-	double proximity[numOldWalls];
-	for (int i = 0; i < numOldWalls; i++)
+	double proximity[parent->numChildren];
+	for (int i = 0; i < parent->numChildren; i++)
 	{
 		// center point of wall
 		int wallX = (OldWalls[i][0] + OldWalls[i][3])/2;
@@ -255,101 +292,162 @@ void sortOldWallsZOrder()
 	} 
 	printf("-----------\n");*/
 }
+// sorts sectors by current distance to player (greatest to least)
+// DEV NOTE: refactor least to greatest for overdraw optimization when ready;
+//           Must program optimization first
+void sortSectorZOrder()
+{
+	// Proximity of each wall to player. Calculated with Pythagorean Theorem.
+	// Used to sort walls by draw order.
+	double proximity[numSectors];
+	for (int i = 0; i < numSectors; i++)
+	{
+		// distance to player = sqrt(a squared + b squared)
+		int a = Sectors[i].centerX - Player.x;
+		int b = Sectors[i].centerY - Player.y;
+		proximity[i] = sqrt((a*a) + (b*b));
+	}
+	// sort sectors here
+	// bubble sort probably sucks for this, but easier to implement quickly
+	double proxSwp;
+	sector secSwp;
+	for (int i = 0; i < numSectors; i++)
+	{
+		for (int j = 0; j < numSectors-1; j++)
+		{
+			if(proximity[j] < proximity[j+1])
+			{
+                // swap proximity vals
+				proxSwp = proximity[j];
+				proximity[j] = proximity[j+1];
+				proximity[j+1] = proxSwp;
+                // swap corresponding sectors' positions in global Sectors
+                // array
+                sector* sec1 = &Sectors[j];
+                sector* sec2 = &Sectors[j+1];
+                secSwp = Sectors[j];
+                Sectors[j] = Sectors[j+1];
+                Sectors[j+1] = secSwp;
+                // propagate swapped sector locations to child walls
+                updateWallParentSector(sec1, sec2);
+                updateWallParentSector(sec2, sec1);
+			}
+		}
+	}
+}
 // Renders the current view of the 3D environment
 void drawView()
 {
 	//end debug
 	float pCos = TrigVals.cos[Player.angle];
 	float pSin = TrigVals.sin[Player.angle];
+    // render calculation buffer. Each render
+    // pipeline stage is executed destructively on
+    // these arrays, with the final result being passed
+    // to displayFrame
 	int wallX[4], wallY[4], wallZ[4];
 	int FOV = 200; // DEV NOTE: investigate what units this value is
 	int x1, y1, x2, y2;
-	int wall_height = 40;
-	// sort walls for correct draw order
-	sortOldWallsZOrder();
-	for (int i = 0; i < numOldWalls; i++) 
-	{
-		wallX[0] = OldWalls[i][0];
-		wallY[0] = OldWalls[i][1];
-		wallZ[0] = OldWalls[i][2];
-		wallX[1] = OldWalls[i][3];
-		wallY[1] = OldWalls[i][4];
-		wallZ[1] = OldWalls[i][5];
-	
-		// absolute world position of the wall's 4 points; these change as the
-		// player moves and rotates
+	//int wall_height = 40;
+	// sort sectors for correct draw order
+	sortSectorZOrder();
+    for(int i = 0; i < numSectors; i++)
+    {
+        // look up child walls, save refs
+        wall* children[Sectors[i].numChildren];
+        retrieveChildWalls(&Sectors[i], children);
 
-		// offset wall points by player location
-			x1 = wallX[0] - Player.x;
-			y1 = wallY[0] - Player.y;
-			x2 = wallX[1] - Player.x;
-			y2 = wallY[1] - Player.y;
-		// offset wall points by player rotation
-		wallX[0] = (x1 * pCos) - (y1 * pSin);
-		wallY[0] = (y1 * pCos) + (x1 * pSin);
-		// z coords are unaffected by looking angle
-		wallZ[0] = wallZ[0] - Player.z;
+        int sectorBottomZ = Sectors[i].bottomZ;
+        int sectorTopZ = Sectors[i].topZ;
+        // debug
+        printf("SECTOR %d (%p)-> %d children:\n", i, &Sectors[i], Sectors[i].numChildren);
 
-		wallX[1] = (x2 * pCos) - (y2 * pSin);
-		wallY[1] = (y2 * pCos) + (x2 * pSin);
-		// z coords are unaffected by looking angle
-		wallZ[1] = wallZ[1] - Player.z;
+        for (int j = 0; j < Sectors[i].numChildren; j++) 
+        {
+            // absolute world position of the wall's 4 points; these change as the
+            // player moves and rotates
+            wallX[0] = children[j]->x1;
+            wallY[0] = children[j]->y1;
+            wallZ[0] = sectorBottomZ;
+            wallX[1] = children[j]->x2;
+            wallY[1] = children[j]->y2;
+            wallZ[1] = sectorBottomZ;
+            // debug
+            printf("  WALL %d : x1=%d, y1=%d, z1=%d, x2=%d, y2=%d, z2=%d\n\tparent=%p\n",
+                    j, wallX[0], wallY[0], wallZ[0], wallX[1], wallY[1], wallZ[1], &Sectors[i]);
+            // offset wall points by player location
+            x1 = wallX[0] - Player.x;
+            y1 = wallY[0] - Player.y;
+            x2 = wallX[1] - Player.x;
+            y2 = wallY[1] - Player.y;
+            // offset wall points by player rotation
+            wallX[0] = (x1 * pCos) - (y1 * pSin);
+            wallY[0] = (y1 * pCos) + (x1 * pSin);
+            // z coords are unaffected by looking angle
+            wallZ[0] = wallZ[0] - Player.z;
 
-		// set upper 2 points' coords. X and Y are the same for vertically aligned points,
-		// but z coords will be offset, defining wall height
+            wallX[1] = (x2 * pCos) - (y2 * pSin);
+            wallY[1] = (y2 * pCos) + (x2 * pSin);
+            // z coords are unaffected by looking angle
+            wallZ[1] = wallZ[1] - Player.z;
 
-		wallX[2] = wallX[0];
-		wallY[2] = wallY[0];
-		wallZ[2] = wallZ[0] + wall_height;
+            // set upper 2 points' coords. X and Y are the same for vertically aligned points,
+            // but z coords will be offset, defining wall height
 
-		wallX[3] = wallX[1];
-		wallY[3] = wallY[1];
-		wallZ[3] = wallZ[1] + wall_height;
+            wallX[2] = wallX[0];
+            wallY[2] = wallY[0];
+            wallZ[2] = wallZ[0] + (sectorTopZ-sectorBottomZ);
 
-		// clip offscreen portion of wall (aka skip rendering it)
-		// skip drawing wall if entirely offscreen
-		if(wallY[0] < 1 && wallY[1] < 1) { /*printf("[]--> SKIPPED WALL DRAW\n");*/ continue; }
-		// clip point 1 of wall if offscreen
-		if(wallY[0] < 1)
-		{
-			// clip bottom line of wall
-			clipBehindCamera(&wallX[0], &wallY[0], &wallZ[0], wallX[1], wallY[1], wallZ[1]);
-			// clip top line of wall
-			clipBehindCamera(&wallX[2], &wallY[2], &wallZ[2], wallX[3], wallY[3], wallZ[3]);
-		}
-		// clip point 2 of wall if offscreen
-		if(wallY[1] < 1)
-		{
-			// clip bottom line of wall
-			clipBehindCamera(&wallX[1], &wallY[1], &wallZ[1], wallX[0], wallY[0], wallZ[0]);
-			// clip top line of wall
-			clipBehindCamera(&wallX[3], &wallY[3], &wallZ[3], wallX[2], wallY[2], wallZ[2]);
-		}
+            wallX[3] = wallX[1];
+            wallY[3] = wallY[1];
+            wallZ[3] = wallZ[1] + (sectorTopZ-sectorBottomZ);
 
-		// transform 3D wall points into 2D screen positions
-		wallX[0] = (wallX[0] * FOV) / wallY[0] + (SCREEN_WIDTH / 2); 
-		wallY[0] = (wallZ[0] * FOV) / wallY[0] + (SCREEN_HEIGHT / 2);
+            // clip offscreen portion of wall (aka skip rendering it)
+            // skip drawing wall if entirely offscreen
+            if(wallY[0] < 1 && wallY[1] < 1) { /*printf("[]--> SKIPPED WALL DRAW\n");*/ continue; }
+            // clip point 1 of wall if offscreen
+            if(wallY[0] < 1)
+            {
+                // clip bottom line of wall
+                clipBehindCamera(&wallX[0], &wallY[0], &wallZ[0], wallX[1], wallY[1], wallZ[1]);
+                // clip top line of wall
+                clipBehindCamera(&wallX[2], &wallY[2], &wallZ[2], wallX[3], wallY[3], wallZ[3]);
+            }
+            // clip point 2 of wall if offscreen
+            if(wallY[1] < 1)
+            {
+                // clip bottom line of wall
+                clipBehindCamera(&wallX[1], &wallY[1], &wallZ[1], wallX[0], wallY[0], wallZ[0]);
+                // clip top line of wall
+                clipBehindCamera(&wallX[3], &wallY[3], &wallZ[3], wallX[2], wallY[2], wallZ[2]);
+            }
 
-		wallX[1] = (wallX[1] * FOV) / wallY[1] + (SCREEN_WIDTH / 2);
-		wallY[1] = (wallZ[1] * FOV) / wallY[1] + (SCREEN_HEIGHT / 2);
+            // transform 3D wall points into 2D screen positions
+            wallX[0] = (wallX[0] * FOV) / wallY[0] + (SCREEN_WIDTH / 2); 
+            wallY[0] = (wallZ[0] * FOV) / wallY[0] + (SCREEN_HEIGHT / 2);
 
-		wallX[2] = (wallX[2] * FOV) / wallY[2] + (SCREEN_WIDTH / 2);
-		wallY[2] = (wallZ[2] * FOV) / wallY[2] + (SCREEN_HEIGHT / 2);
+            wallX[1] = (wallX[1] * FOV) / wallY[1] + (SCREEN_WIDTH / 2);
+            wallY[1] = (wallZ[1] * FOV) / wallY[1] + (SCREEN_HEIGHT / 2);
 
-		wallX[3] = (wallX[3] * FOV) / wallY[3] + (SCREEN_WIDTH / 2);
-		wallY[3] = (wallZ[3] * FOV) / wallY[3] + (SCREEN_HEIGHT / 2);
-		
-		//debug
-		//printf("Screen Wall %d: delta x=%d\n", i, wallX[1] - wallX[0]);
-		//end debug
+            wallX[2] = (wallX[2] * FOV) / wallY[2] + (SCREEN_WIDTH / 2);
+            wallY[2] = (wallZ[2] * FOV) / wallY[2] + (SCREEN_HEIGHT / 2);
 
-		// skip if wall outside of camera view
-		if((wallX[0] < 1 && wallX[1] < 1) || (wallX[0] > SCREEN_WIDTH-1 && wallX[1] > SCREEN_WIDTH-1)) 
-		{
-			//printf("[]--> SKIPPED WALL DRAW\n");
-			continue; 
-		}
-		drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], OldWalls[i][6]);
-	}
+            wallX[3] = (wallX[3] * FOV) / wallY[3] + (SCREEN_WIDTH / 2);
+            wallY[3] = (wallZ[3] * FOV) / wallY[3] + (SCREEN_HEIGHT / 2);
+            
+            //debug
+            //printf("Screen Wall %d: delta x=%d\n", i, wallX[1] - wallX[0]);
+            //end debug
+
+            // skip if wall outside of camera view
+            if((wallX[0] < 1 && wallX[1] < 1) || (wallX[0] > SCREEN_WIDTH-1 && wallX[1] > SCREEN_WIDTH-1)) 
+            {
+                //printf("[]--> SKIPPED WALL DRAW\n");
+                continue; 
+            }
+            drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], children[j]->color);
+        }
+    }
+    // below loop will be nested in above loop
 
 }

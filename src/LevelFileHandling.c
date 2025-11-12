@@ -71,12 +71,12 @@ void skipComments(FILE* fptr, char* lineBuffer, int lineSize)
 	{
 		if(lineBuffer[0] == '#')
 		{
-			printf("%c comment skipped\n", lineBuffer[0]);
+			//printf("%c comment skipped\n", lineBuffer[0]);
 			continue;
 		}
 		else
 		{
-			printf("Stopped on this line:\n\"%s\"\n", lineBuffer);
+			//printf("Stopped on this line:\n\"%s\"\n", lineBuffer);
 			break;
 		}
 	}
@@ -93,7 +93,7 @@ int numSectors = 0;
 int numWalls = 0;
 void loadLevel(char filename[])
 {
-    printf("DEBUG: Loading level\n");
+    //printf("DEBUG: Loading level\n");
 	FILE *fptr = fopen(filename, "r");
 	char currentLine[MAX_LINE_CHARS];
 	// Tracks whether file contains proper headers. 
@@ -133,39 +133,34 @@ void loadLevel(char filename[])
         "Verify sector/wall headers are correct.\n");
 		return;
 	}
-    printf("DEBUG: Syntax check passed\n");
+    //printf("DEBUG: Syntax check passed\n");
 	// temp buffers for sector fields
 	int bottomZ;
 	int topZ;
 	int centerX;
 	int centerY;
+    int numChildren;
     // reset file pointer to start of file
     fseek(fptr, 0, SEEK_SET);
 	while(fgets(currentLine, MAX_LINE_CHARS, fptr))
 	{
-        printf("DEBUG: file parse begun\n");
         skipComments(fptr, currentLine, MAX_LINE_CHARS);
-		printf("DEBUG: File line is\n\"%s\"", currentLine); // debug
 		if(strcmp(sectorHeader, currentLine) == 0) 
 		{
 			// populate new sector struct here
             numSectors++;
             fgets(currentLine, MAX_LINE_CHARS, fptr);
             skipComments(fptr, currentLine, MAX_LINE_CHARS);
-            printf("DEBUG: numSectors = %d\n", numSectors);
             sector secBuffer;
-            printf("DEBUG: sector buffer allocated\n");
 			// 1) split fields on whitespace
 			char *tokenPtr = strtok(currentLine, " ");
             //printf("DEBUG: token ptr initialized\n");
 			// 2) parse to numbers
-            printf("DEBUG: token is %s\n", tokenPtr);
 			bottomZ = atoi(tokenPtr);
 			tokenPtr = strtok(NULL, " "); //advance token pointer
-            printf("DEBUG: token is %s\n", tokenPtr);
 			topZ = atoi(tokenPtr);
-            printf("DEBUG: bottomZ, topZ parsed\n");
 			// 3) remaining members must be calculated from walls
+            int numChildWalls = 0;
 			//populate wall structs
 		    if(seekLine(fptr, wallHeader, currentLine, MAX_LINE_CHARS))
             {
@@ -173,14 +168,13 @@ void loadLevel(char filename[])
                 // used to average child wall points, thus determining
                 // the parent sector's center coords 
                 float xSum, ySum;
-                int numChildWalls = 0;
                 fgets(currentLine, MAX_LINE_CHARS, fptr);
                 skipComments(fptr, currentLine, MAX_LINE_CHARS);
+                numChildWalls = 0;
                 while(strcmp(wallFooter, currentLine) != 0)
                 {
                     numWalls++;
                     numChildWalls++;
-                    printf("  DEBUG: numWalls = %d, numChildWalls = %d\n", numWalls, numChildWalls);
 
                     skipComments(fptr, currentLine, MAX_LINE_CHARS);
                     tokenPtr = strtok(currentLine, " ");
@@ -214,14 +208,14 @@ void loadLevel(char filename[])
                 centerX = (int) roundf(xSum / (float) numChildWalls);
                 centerY = (int) roundf(ySum / (float) numChildWalls);
             }
-            printf("  DEBUG: Child Wall Parse Finished\n");
+            //printf("  DEBUG: Child Wall Parse Finished\n");
 
 			// 5) write to struct
 			// 0 is initial value of playerProximity, which is constantly 
             // recalculated at runtime
 			// "false" is default value of hasCaps (see struct definition 
             // in GameStructs.h)
-			sector newSector = { bottomZ, topZ, centerX, centerY, 0, false };
+			sector newSector = { bottomZ, topZ, centerX, centerY, numChildWalls, 0, false };
 			Sectors[numSectors - 1] = newSector;
             //numSectors++;
 		}
@@ -231,7 +225,7 @@ void loadLevel(char filename[])
             printf("ERROR: Bad syntax in level file. Aborting...\n");
             break;
         }
-        printf("DEBUG: Sector Parse Finished\n");
+        //printf("DEBUG: Sector Parse Finished\n");
 	}
 	fclose(fptr);
 }

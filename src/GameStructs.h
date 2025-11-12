@@ -40,6 +40,7 @@ typedef struct
 	int topZ; // z location of top edge
 	int centerX; // x coord of sector's center
 	int centerY; // y coord of sector's center
+    int numChildren; // number of child walls belonging to this sector
 	int playerProximity; // used to determine onscreen draw order of sectors
 	// sector must have AT LEAST 2 walls to draw valid caps
 	bool hasCaps; // used to determine whether to draw floors/ceilings (aka sector "caps")

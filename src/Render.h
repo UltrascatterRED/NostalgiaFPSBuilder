@@ -17,6 +17,7 @@ void drawPixel(int x, int y, int color);
 void clearBackground();
 void clipBehindCamera(int *x1, int *y1, int *z1, int x2, int y2, int z2);
 void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color);
+void sortSectorZOrder();
 void drawView();
 
 #endif

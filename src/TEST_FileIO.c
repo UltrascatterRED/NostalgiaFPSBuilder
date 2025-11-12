@@ -19,6 +19,7 @@ int main()
         "topZ=%d,"
         "centerX=%d,"
         "centerY=%d,"
+        "numChildren=%d,"
         "playerProximity=%d,"
         "hasCaps=%d }\n",
         &Sectors[i],
@@ -26,6 +27,7 @@ int main()
         Sectors[i].topZ,
         Sectors[i].centerX,
         Sectors[i].centerY,
+        Sectors[i].numChildren,
         Sectors[i].playerProximity,
         Sectors[i].hasCaps);
     }
