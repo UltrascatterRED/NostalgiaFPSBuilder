@@ -4,6 +4,7 @@
 #include "Render.h"
 #include "GameStructs.h"
 #include "LevelFileHandling.h"
+#include "Debug.h"
 
 // DEV NOTE: Declare this variable in header file
 bool drawnPixels[SCREEN_WIDTH][SCREEN_HEIGHT] = {false};
@@ -21,24 +22,55 @@ void retrieveChildWalls(sector* parent, wall* children[])
             children[returnIdx] = &Walls[i];
             returnIdx++;
         }
+        if(returnIdx >= parent->numChildren)
+        {
+            return;
+        }
     }
 }
-// given the old memory location and new/current memory
-// location of a sector, updates all children of the sector
-// to point to the new memory location, thus preserving
-// sector-wall links.
-//
-// This function assumes the old location pointer is
-// correct; the function will fail otherwise.
-void updateWallParentSector(sector* oldLoc, sector* newLoc)
+// given the pointers to two sectors, swaps the pointers for their
+// respective child walls. Intended for use with Z-order sorting of
+// sectors.
+void swapWallParentSectors(sector* sec1, sector* sec2)
 {
-    wall* children[newLoc->numChildren];
-    // walls still reference old location
-    retrieveChildWalls(oldLoc, children);
-    for(int i = 0; i < newLoc->numChildren; i++)
+
+    wall* sec1Children[sec1->numChildren];
+    wall* sec2Children[sec2->numChildren];
+    
+    retrieveChildWalls(sec1, sec1Children);
+    retrieveChildWalls(sec2, sec2Children);
+
+    for(int i = 0; i < sec1->numChildren; i++)
     {
-        children[i]->parentSector = newLoc;
+        sec1Children[i]->parentSector = sec2;
     }
+    for(int i = 0; i < sec2->numChildren; i++)
+    {
+        sec2Children[i]->parentSector = sec1;
+    }
+}
+// updates all Sectors' distances to player, based
+// upon their respective center coordinates.
+// Intended to be executed once per frame draw.
+void updateSectorsProx()
+{
+    int a = 0;
+    int b = 0;
+    int prox = 0;
+    for(int i = 0; i < numSectors; i++)
+    {
+        a = Sectors[i].centerX - Player.x;
+        b = Sectors[i].centerY - Player.y;
+        // calculate hypotenuse as double, round to nearest int,
+        // then truncate via typecast. Theoretically minimizes
+        // rounding inaccuracy
+        prox = (int)round(sqrt((a*a) + (b*b)));
+        Sectors[i].playerProximity = prox;
+        // debug
+        printf("Sector %d (%p) prox = %d\n", i, &Sectors[i], Sectors[i].playerProximity);
+    }
+    // debug
+    printf("-------------------------------------------\n");
 }
 
 void drawPixel(int x, int y, int color)
@@ -297,40 +329,34 @@ void sortOldWallsZOrder(sector* parent)
 //           Must program optimization first
 void sortSectorZOrder()
 {
-	// Proximity of each wall to player. Calculated with Pythagorean Theorem.
-	// Used to sort walls by draw order.
-	double proximity[numSectors];
-	for (int i = 0; i < numSectors; i++)
-	{
-		// distance to player = sqrt(a squared + b squared)
-		int a = Sectors[i].centerX - Player.x;
-		int b = Sectors[i].centerY - Player.y;
-		proximity[i] = sqrt((a*a) + (b*b));
-	}
 	// sort sectors here
 	// bubble sort probably sucks for this, but easier to implement quickly
-	double proxSwp;
 	sector secSwp;
 	for (int i = 0; i < numSectors; i++)
 	{
 		for (int j = 0; j < numSectors-1; j++)
 		{
-			if(proximity[j] < proximity[j+1])
+			if(Sectors[j].playerProximity < Sectors[j+1].playerProximity)
 			{
-                // swap proximity vals
-				proxSwp = proximity[j];
-				proximity[j] = proximity[j+1];
-				proximity[j+1] = proxSwp;
                 // swap corresponding sectors' positions in global Sectors
                 // array
+                printf("SWAPPING SECTORS\n");
                 sector* sec1 = &Sectors[j];
                 sector* sec2 = &Sectors[j+1];
+                //printSectorInfo(sec1);
+                //printSectorInfo(sec2);
+                // propagate swapped sector locations to child walls
+                // DEV NOTE (11-13-25): This use of the 
+                //      updateWallParentSector() function is flawed
+                //      because there is no swap buffer for the sector
+                //      pointers. Must devise something like that to
+                //      fix visual bugs.
+                swapWallParentSectors(sec1, sec2);
+
                 secSwp = Sectors[j];
                 Sectors[j] = Sectors[j+1];
                 Sectors[j+1] = secSwp;
-                // propagate swapped sector locations to child walls
-                updateWallParentSector(sec1, sec2);
-                updateWallParentSector(sec2, sec1);
+                printf("SWAP COMPLETE\n");
 			}
 		}
 	}
@@ -348,7 +374,8 @@ void drawView()
 	int wallX[4], wallY[4], wallZ[4];
 	int FOV = 200; // DEV NOTE: investigate what units this value is
 	int x1, y1, x2, y2;
-	//int wall_height = 40;
+    // update sectors' player proximity for correct sorting by Z-order
+    updateSectorsProx();
 	// sort sectors for correct draw order
 	sortSectorZOrder();
     for(int i = 0; i < numSectors; i++)
@@ -360,7 +387,7 @@ void drawView()
         int sectorBottomZ = Sectors[i].bottomZ;
         int sectorTopZ = Sectors[i].topZ;
         // debug
-        printf("SECTOR %d (%p)-> %d children:\n", i, &Sectors[i], Sectors[i].numChildren);
+        //printf("SECTOR %d (%p)-> %d children:\n", i, &Sectors[i], Sectors[i].numChildren);
 
         for (int j = 0; j < Sectors[i].numChildren; j++) 
         {
@@ -373,8 +400,8 @@ void drawView()
             wallY[1] = children[j]->y2;
             wallZ[1] = sectorBottomZ;
             // debug
-            printf("  WALL %d : x1=%d, y1=%d, z1=%d, x2=%d, y2=%d, z2=%d\n\tparent=%p\n",
-                    j, wallX[0], wallY[0], wallZ[0], wallX[1], wallY[1], wallZ[1], &Sectors[i]);
+            //printf("  WALL %d : x1=%d, y1=%d, z1=%d, x2=%d, y2=%d, z2=%d\n\tparent=%p\n",
+            //      j, wallX[0], wallY[0], wallZ[0], wallX[1], wallY[1], wallZ[1], &Sectors[i]);
             // offset wall points by player location
             x1 = wallX[0] - Player.x;
             y1 = wallY[0] - Player.y;
@@ -448,6 +475,4 @@ void drawView()
             drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], children[j]->color);
         }
     }
-    // below loop will be nested in above loop
-
 }

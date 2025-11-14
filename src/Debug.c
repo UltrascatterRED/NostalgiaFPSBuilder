@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-//#include "GameStructs.h"
+#include "GameStructs.h"
 #include "Debug.h"
 #include "Render.h"
 
@@ -69,4 +69,64 @@ void drawTest()
 	tick += 1; 
 	if(tick>20) { tick = 0; } 
 	drawPixel(swHalf, shHalf+tick, 6); 
+}
+
+void printSectorInfo(sector* loc)
+{
+    printf("----------------------------------------\n"
+    "INFO FOR SECTOR AT [%p]:\n"
+    "bottomZ = %d,\n"
+    "topZ = %d,\n"
+    "centerX = %d,\n"
+    "centerY = %d,\n"
+    "numChildren = %d,\n"
+    "playerProximity = %d,\n"
+    "hasCaps = %d\n"
+    "----------------------------------------\n",
+    loc, 
+    loc->bottomZ, 
+    loc->topZ, 
+    loc->centerX, 
+    loc->centerY,
+    loc->numChildren,
+    loc->playerProximity,
+    loc->hasCaps);
+}
+
+void printAllSectorsInfo()
+{
+    for(int i = 0; i < MAX_SECTORS; i++)
+    {
+        printf("(INDEX %d) ", i);
+        printSectorInfo(&Sectors[i]);
+    }
+}
+
+void printWallInfo(wall* loc)
+{
+    printf("------------------------------------\n"
+    "INFO FOR WALL AT [%p]:\n"
+    "x1 = %d,\n"
+    "y1 = %d,\n"
+    "x2 = %d,\n"
+    "y2 = %d,\n"
+    "color = %d,\n"
+    "sector = %p\n"
+    "------------------------------------\n",
+    loc,
+    loc->x1,
+    loc->y1,
+    loc->x2,
+    loc->y2,
+    loc->color,
+    loc->parentSector);
+}
+
+void printAllWallsInfo()
+{
+    for(int i = 0; i < MAX_WALLS; i++)
+    {
+        printf("(INDEX %d) ");
+        printWallInfo(&Walls[i]);
+    }
 }

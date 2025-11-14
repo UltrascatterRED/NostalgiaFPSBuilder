@@ -139,7 +139,7 @@ void loadLevel(char filename[])
 	int topZ;
 	int centerX;
 	int centerY;
-    int numChildren;
+    int numChildren = 0;
     // reset file pointer to start of file
     fseek(fptr, 0, SEEK_SET);
 	while(fgets(currentLine, MAX_LINE_CHARS, fptr))
@@ -160,21 +160,21 @@ void loadLevel(char filename[])
 			tokenPtr = strtok(NULL, " "); //advance token pointer
 			topZ = atoi(tokenPtr);
 			// 3) remaining members must be calculated from walls
-            int numChildWalls = 0;
 			//populate wall structs
 		    if(seekLine(fptr, wallHeader, currentLine, MAX_LINE_CHARS))
             {
                 int x1, y1, x2, y2, color;
                 // used to average child wall points, thus determining
                 // the parent sector's center coords 
-                float xSum, ySum;
+                float xSum = 0;
+                float ySum = 0;
                 fgets(currentLine, MAX_LINE_CHARS, fptr);
                 skipComments(fptr, currentLine, MAX_LINE_CHARS);
-                numChildWalls = 0;
+                numChildren = 0;
                 while(strcmp(wallFooter, currentLine) != 0)
                 {
                     numWalls++;
-                    numChildWalls++;
+                    numChildren++;
 
                     skipComments(fptr, currentLine, MAX_LINE_CHARS);
                     tokenPtr = strtok(currentLine, " ");
@@ -182,31 +182,46 @@ void loadLevel(char filename[])
                     //TODO: validate ints here via new function before
                     //      assigning atoi() calls
                     
+                    //printf("DEBUG: parsing token \"%s\" -> x1\n", tokenPtr);
                     x1 = atoi(tokenPtr);
+                    //printf("x1 = %d\n", x1);
                     xSum += x1;
 
                     tokenPtr = strtok(NULL, " ");
+                    //printf("DEBUG: parsing token \"%s\" -> y1\n", tokenPtr);
                     y1 = atoi(tokenPtr);
+                    //printf("y1 = %d\n", y1);
                     ySum += y1;
 
                     tokenPtr = strtok(NULL, " ");
+                    //printf("DEBUG: parsing token \"%s\" -> x2\n", tokenPtr);
                     x2 = atoi(tokenPtr);
+                    //printf("x2 = %d\n", x2);
                     xSum += x2;
 
                     tokenPtr = strtok(NULL, " ");
+                    //printf("DEBUG: parsing token \"%s\" -> y2\n", tokenPtr);
                     y2 = atoi(tokenPtr);
+                    //printf("y2 = %d\n", y2);
                     ySum += y2;
 
                     tokenPtr = strtok(NULL, " ");
+                    //printf("DEBUG: parsing token \"%s\" -> color\n", tokenPtr);
                     color = atoi(tokenPtr);
+                    //printf("color = %d\n\n", color);
 
                     wall wallBuffer = {x1, y1, x2, y2, color, &Sectors[numSectors - 1]};
                     Walls[numWalls - 1] = wallBuffer;
                     fgets(currentLine, MAX_LINE_CHARS, fptr);
                 }
                 // 4) calculate centerX, centerY
-                centerX = (int) roundf(xSum / (float) numChildWalls);
-                centerY = (int) roundf(ySum / (float) numChildWalls);
+                // divide by numChildren*2 to account for redundant coord summation
+                centerX = (int) roundf(xSum / (float) (numChildren*2));
+                centerY = (int) roundf(ySum / (float) (numChildren*2));
+                // debug
+                //printf("Sector %d: centerX = %f/%d = %d, centerY = %f/%d = %d\n", 
+                //numSectors-1, xSum, numChildren, centerX, 
+                //ySum, numChildren, centerY);
             }
             //printf("  DEBUG: Child Wall Parse Finished\n");
 
@@ -215,7 +230,7 @@ void loadLevel(char filename[])
             // recalculated at runtime
 			// "false" is default value of hasCaps (see struct definition 
             // in GameStructs.h)
-			sector newSector = { bottomZ, topZ, centerX, centerY, numChildWalls, 0, false };
+			sector newSector = { bottomZ, topZ, centerX, centerY, numChildren, 0, false };
 			Sectors[numSectors - 1] = newSector;
             //numSectors++;
 		}

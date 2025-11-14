@@ -132,3 +132,21 @@ Render.c:446:93: error: ‘children[j]’ is a pointer; did you mean to use ‘-
 ## Error Log - Tue 2025-11-11 17:58:12 EST ##
 ## Error Log - Tue 2025-11-11 19:32:29 EST ##
 ## Error Log - Tue 2025-11-11 19:39:56 EST ##
+## Error Log - Wed 2025-11-12 15:39:22 EST ##
+## Error Log - Wed 2025-11-12 15:59:52 EST ##
+## Error Log - Wed 2025-11-12 16:03:22 EST ##
+## Error Log - Wed 2025-11-12 16:04:32 EST ##
+## Error Log - Wed 2025-11-12 16:42:59 EST ##
+## Error Log - Wed 2025-11-12 16:45:18 EST ##
+## Error Log - Wed 2025-11-12 16:47:27 EST ##
+## Error Log - Wed 2025-11-12 16:50:39 EST ##
+## Error Log - Wed 2025-11-12 16:52:29 EST ##
+## Error Log - Wed 2025-11-12 16:54:32 EST ##
+## Error Log - Wed 2025-11-12 16:56:27 EST ##
+## Error Log - Wed 2025-11-12 16:59:49 EST ##
+## Error Log - Thu 2025-11-13 18:09:58 EST ##
+## Error Log - Thu 2025-11-13 20:32:50 EST ##
+/usr/bin/ld: /tmp/ccpnHlMr.o: in function `sortSectorZOrder':
+Render.c:(.text+0xc3d): undefined reference to `updateWallParentSector'
+collect2: error: ld returned 1 exit status
+## Error Log - Thu 2025-11-13 20:33:21 EST ##
