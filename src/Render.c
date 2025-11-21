@@ -67,10 +67,29 @@ void updateSectorsProx()
         prox = (int)round(sqrt((a*a) + (b*b)));
         Sectors[i].playerProximity = prox;
         // debug
-        printf("Sector %d (%p) prox = %d\n", i, &Sectors[i], Sectors[i].playerProximity);
+        //printf("Sector %d (%p) prox = %d\n", i, &Sectors[i], Sectors[i].playerProximity);
     }
     // debug
-    printf("-------------------------------------------\n");
+    //printf("-------------------------------------------\n");
+}
+
+void updateWallsProx()
+{
+    int a = 0;
+    int b = 0;
+    int prox = 0;
+    for(int i = 0; i < numWalls; i++)
+    {
+        a = Walls[i].centerX - Player.x;
+        b = Walls[i].centerY - Player.y;
+        // calculate hypotenuse as double, round to nearest int,
+        // then truncate via typecast. Theoretically minimizes
+        // rounding inaccuracy
+        prox = (int)round(sqrt((a*a) + (b*b)));
+        Walls[i].playerProximity = prox;
+        // debug
+        //printf("Wall %d prox = %d\n", i, Walls[i].playerProximity);
+    }
 }
 
 void drawPixel(int x, int y, int color)
@@ -361,10 +380,31 @@ void sortSectorZOrder()
 		}
 	}
 }
+// Sorts walls by current distance to player, closest to farthest.
+// Walls are sorted this way to accommodate overdraw optimizations.
+void sortWallsZOrder()
+{
+    updateWallsProx(); 
+	// sort walls here
+	// bubble sort probably sucks for this, but easier to implement quickly
+	wall wallSwp;
+	for (int i = 0; i < numWalls; i++)
+	{
+
+		for (int j = 0; j < numWalls-1; j++)
+		{
+			if(Walls[j].playerProximity < Walls[j+1].playerProximity)
+			{
+                wallSwp = Walls[j];
+                Walls[j] = Walls[j+1];
+                Walls[j+1] = wallSwp;
+			}
+		}
+	}
+}
 // Renders the current view of the 3D environment
 void drawView()
 {
-	//end debug
 	float pCos = TrigVals.cos[Player.angle];
 	float pSin = TrigVals.sin[Player.angle];
     // render calculation buffer. Each render
@@ -374,105 +414,103 @@ void drawView()
 	int wallX[4], wallY[4], wallZ[4];
 	int FOV = 200; // DEV NOTE: investigate what units this value is
 	int x1, y1, x2, y2;
-    // update sectors' player proximity for correct sorting by Z-order
-    updateSectorsProx();
 	// sort sectors for correct draw order
-	sortSectorZOrder();
-    for(int i = 0; i < numSectors; i++)
+	sortWallsZOrder();
+
+    int sectorBottomZ;
+    int sectorTopZ;
+    for(int i = 0; i < numWalls; i++)
     {
         // look up child walls, save refs
-        wall* children[Sectors[i].numChildren];
-        retrieveChildWalls(&Sectors[i], children);
+        //wall* children[Sectors[i].numChildren];
+        //retrieveChildWalls(&Sectors[i], children);
 
-        int sectorBottomZ = Sectors[i].bottomZ;
-        int sectorTopZ = Sectors[i].topZ;
+        sectorBottomZ = Walls[i].parentSector->bottomZ;
+        sectorTopZ = Walls[i].parentSector->topZ;
         // debug
         //printf("SECTOR %d (%p)-> %d children:\n", i, &Sectors[i], Sectors[i].numChildren);
 
-        for (int j = 0; j < Sectors[i].numChildren; j++) 
+        // absolute world position of the wall's 4 points; these change as the
+        // player moves and rotates
+        wallX[0] = Walls[i].x1;
+        wallY[0] = Walls[i].y1;
+        wallZ[0] = sectorBottomZ;
+        wallX[1] = Walls[i].x2;
+        wallY[1] = Walls[i].y2;
+        wallZ[1] = sectorBottomZ;
+        // debug
+        //printf("  WALL %d : x1=%d, y1=%d, z1=%d, x2=%d, y2=%d, z2=%d\n\tparent=%p\n",
+        //      j, wallX[0], wallY[0], wallZ[0], wallX[1], wallY[1], wallZ[1], &Sectors[i]);
+        // offset wall points by player location
+        x1 = wallX[0] - Player.x;
+        y1 = wallY[0] - Player.y;
+        x2 = wallX[1] - Player.x;
+        y2 = wallY[1] - Player.y;
+        // offset wall points by player rotation
+        wallX[0] = (x1 * pCos) - (y1 * pSin);
+        wallY[0] = (y1 * pCos) + (x1 * pSin);
+        // z coords are unaffected by looking angle
+        wallZ[0] = wallZ[0] - Player.z;
+
+        wallX[1] = (x2 * pCos) - (y2 * pSin);
+        wallY[1] = (y2 * pCos) + (x2 * pSin);
+        // z coords are unaffected by looking angle
+        wallZ[1] = wallZ[1] - Player.z;
+
+        // set upper 2 points' coords. X and Y are the same for vertically aligned points,
+        // but z coords will be offset, defining wall height
+
+        wallX[2] = wallX[0];
+        wallY[2] = wallY[0];
+        wallZ[2] = wallZ[0] + (sectorTopZ-sectorBottomZ);
+
+        wallX[3] = wallX[1];
+        wallY[3] = wallY[1];
+        wallZ[3] = wallZ[1] + (sectorTopZ-sectorBottomZ);
+
+        // clip offscreen portion of wall (aka skip rendering it)
+        // skip drawing wall if entirely offscreen
+        if(wallY[0] < 1 && wallY[1] < 1) { continue; }
+        // clip point 1 of wall if offscreen
+        if(wallY[0] < 1)
         {
-            // absolute world position of the wall's 4 points; these change as the
-            // player moves and rotates
-            wallX[0] = children[j]->x1;
-            wallY[0] = children[j]->y1;
-            wallZ[0] = sectorBottomZ;
-            wallX[1] = children[j]->x2;
-            wallY[1] = children[j]->y2;
-            wallZ[1] = sectorBottomZ;
-            // debug
-            //printf("  WALL %d : x1=%d, y1=%d, z1=%d, x2=%d, y2=%d, z2=%d\n\tparent=%p\n",
-            //      j, wallX[0], wallY[0], wallZ[0], wallX[1], wallY[1], wallZ[1], &Sectors[i]);
-            // offset wall points by player location
-            x1 = wallX[0] - Player.x;
-            y1 = wallY[0] - Player.y;
-            x2 = wallX[1] - Player.x;
-            y2 = wallY[1] - Player.y;
-            // offset wall points by player rotation
-            wallX[0] = (x1 * pCos) - (y1 * pSin);
-            wallY[0] = (y1 * pCos) + (x1 * pSin);
-            // z coords are unaffected by looking angle
-            wallZ[0] = wallZ[0] - Player.z;
-
-            wallX[1] = (x2 * pCos) - (y2 * pSin);
-            wallY[1] = (y2 * pCos) + (x2 * pSin);
-            // z coords are unaffected by looking angle
-            wallZ[1] = wallZ[1] - Player.z;
-
-            // set upper 2 points' coords. X and Y are the same for vertically aligned points,
-            // but z coords will be offset, defining wall height
-
-            wallX[2] = wallX[0];
-            wallY[2] = wallY[0];
-            wallZ[2] = wallZ[0] + (sectorTopZ-sectorBottomZ);
-
-            wallX[3] = wallX[1];
-            wallY[3] = wallY[1];
-            wallZ[3] = wallZ[1] + (sectorTopZ-sectorBottomZ);
-
-            // clip offscreen portion of wall (aka skip rendering it)
-            // skip drawing wall if entirely offscreen
-            if(wallY[0] < 1 && wallY[1] < 1) { /*printf("[]--> SKIPPED WALL DRAW\n");*/ continue; }
-            // clip point 1 of wall if offscreen
-            if(wallY[0] < 1)
-            {
-                // clip bottom line of wall
-                clipBehindCamera(&wallX[0], &wallY[0], &wallZ[0], wallX[1], wallY[1], wallZ[1]);
-                // clip top line of wall
-                clipBehindCamera(&wallX[2], &wallY[2], &wallZ[2], wallX[3], wallY[3], wallZ[3]);
-            }
-            // clip point 2 of wall if offscreen
-            if(wallY[1] < 1)
-            {
-                // clip bottom line of wall
-                clipBehindCamera(&wallX[1], &wallY[1], &wallZ[1], wallX[0], wallY[0], wallZ[0]);
-                // clip top line of wall
-                clipBehindCamera(&wallX[3], &wallY[3], &wallZ[3], wallX[2], wallY[2], wallZ[2]);
-            }
-
-            // transform 3D wall points into 2D screen positions
-            wallX[0] = (wallX[0] * FOV) / wallY[0] + (SCREEN_WIDTH / 2); 
-            wallY[0] = (wallZ[0] * FOV) / wallY[0] + (SCREEN_HEIGHT / 2);
-
-            wallX[1] = (wallX[1] * FOV) / wallY[1] + (SCREEN_WIDTH / 2);
-            wallY[1] = (wallZ[1] * FOV) / wallY[1] + (SCREEN_HEIGHT / 2);
-
-            wallX[2] = (wallX[2] * FOV) / wallY[2] + (SCREEN_WIDTH / 2);
-            wallY[2] = (wallZ[2] * FOV) / wallY[2] + (SCREEN_HEIGHT / 2);
-
-            wallX[3] = (wallX[3] * FOV) / wallY[3] + (SCREEN_WIDTH / 2);
-            wallY[3] = (wallZ[3] * FOV) / wallY[3] + (SCREEN_HEIGHT / 2);
-            
-            //debug
-            //printf("Screen Wall %d: delta x=%d\n", i, wallX[1] - wallX[0]);
-            //end debug
-
-            // skip if wall outside of camera view
-            if((wallX[0] < 1 && wallX[1] < 1) || (wallX[0] > SCREEN_WIDTH-1 && wallX[1] > SCREEN_WIDTH-1)) 
-            {
-                //printf("[]--> SKIPPED WALL DRAW\n");
-                continue; 
-            }
-            drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], children[j]->color);
+            // clip bottom line of wall
+            clipBehindCamera(&wallX[0], &wallY[0], &wallZ[0], wallX[1], wallY[1], wallZ[1]);
+            // clip top line of wall
+            clipBehindCamera(&wallX[2], &wallY[2], &wallZ[2], wallX[3], wallY[3], wallZ[3]);
         }
+        // clip point 2 of wall if offscreen
+        if(wallY[1] < 1)
+        {
+            // clip bottom line of wall
+            clipBehindCamera(&wallX[1], &wallY[1], &wallZ[1], wallX[0], wallY[0], wallZ[0]);
+            // clip top line of wall
+            clipBehindCamera(&wallX[3], &wallY[3], &wallZ[3], wallX[2], wallY[2], wallZ[2]);
+        }
+
+        // transform 3D wall points into 2D screen positions
+        wallX[0] = (wallX[0] * FOV) / wallY[0] + (SCREEN_WIDTH / 2); 
+        wallY[0] = (wallZ[0] * FOV) / wallY[0] + (SCREEN_HEIGHT / 2);
+
+        wallX[1] = (wallX[1] * FOV) / wallY[1] + (SCREEN_WIDTH / 2);
+        wallY[1] = (wallZ[1] * FOV) / wallY[1] + (SCREEN_HEIGHT / 2);
+
+        wallX[2] = (wallX[2] * FOV) / wallY[2] + (SCREEN_WIDTH / 2);
+        wallY[2] = (wallZ[2] * FOV) / wallY[2] + (SCREEN_HEIGHT / 2);
+
+        wallX[3] = (wallX[3] * FOV) / wallY[3] + (SCREEN_WIDTH / 2);
+        wallY[3] = (wallZ[3] * FOV) / wallY[3] + (SCREEN_HEIGHT / 2);
+        
+        //debug
+        //printf("Screen Wall %d: delta x=%d\n", i, wallX[1] - wallX[0]);
+        //end debug
+
+        // skip if wall outside of camera view
+        if((wallX[0] < 1 && wallX[1] < 1) || (wallX[0] > SCREEN_WIDTH-1 && wallX[1] > SCREEN_WIDTH-1)) 
+        {
+            //printf("[]--> SKIPPED WALL DRAW\n");
+            continue; 
+        }
+        drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], Walls[i].color);
     }
 }

@@ -54,6 +54,9 @@ typedef struct
 	int y1;
 	int x2;
 	int y2;
+    int centerX;
+    int centerY;
+    int playerProximity;
 	int color;	// wall color lookup code
 	sector* parentSector; // pointer to parent sector
 }wall;

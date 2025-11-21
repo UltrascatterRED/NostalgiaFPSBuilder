@@ -2,7 +2,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-void printFPS(bufferTime *bft);
+void printFPS();
 void drawTest();
 void printSectorInfo(sector* loc);
 void printAllSectorsInfo();

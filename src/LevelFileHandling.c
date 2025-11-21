@@ -163,7 +163,7 @@ void loadLevel(char filename[])
 			//populate wall structs
 		    if(seekLine(fptr, wallHeader, currentLine, MAX_LINE_CHARS))
             {
-                int x1, y1, x2, y2, color;
+                int x1, y1, x2, y2, centX, centY, pProx, color;
                 // used to average child wall points, thus determining
                 // the parent sector's center coords 
                 float xSum = 0;
@@ -210,7 +210,12 @@ void loadLevel(char filename[])
                     color = atoi(tokenPtr);
                     //printf("color = %d\n\n", color);
 
-                    wall wallBuffer = {x1, y1, x2, y2, color, &Sectors[numSectors - 1]};
+                    // calculate center point of wall; float cast for better accuracy
+                    centX = (int) roundf(((float)x1 + (float)x2)/2);
+                    centY = (int) roundf(((float)y1 + (float)y2)/2);
+                    //printf("Wall %d: centX = %d, centY = %d\n", numWalls, centX, centY);
+                    // playerProximity initialized to 0; it is constantly recalculated at runtime
+                    wall wallBuffer = {x1, y1, x2, y2, centX, centY, 0, color, &Sectors[numSectors - 1]};
                     Walls[numWalls - 1] = wallBuffer;
                     fgets(currentLine, MAX_LINE_CHARS, fptr);
                 }
