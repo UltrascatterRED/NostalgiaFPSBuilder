@@ -1,16 +1,30 @@
-[SECTORS]
-sector1: 0 20
-sector2: 0 40
-sector3: 0 10
+# test comment 1
+[SECTOR]
+# FIELDS:
+# bottomZ topZ
+0 20
 [WALLS]
-20 20 20 300 5 sector1
--20 20 -20 300 5 sector1
--20 20 20 20 5 sector1
--20 300 20 300 5 sector1
--20 300 -70 350 7 sector2
-20 300 70 350 7 sector2
--70 350 70 350 7 sector2
--20 400 20 400 3 sector3
--20 400 -20 450 3 sector3
-20 400 20 450 3 sector3
--20 450 20 450 3 sector3
+# FIELDS:
+# x1 y1 x2 y2 color
+20 20 20 40 5 
+20 20 40 20 5 
+40 20 40 40 5
+40 40 20 40 5
+[END WALLS]
+[SECTOR]
+-20 30
+[WALLS]
+60 20 60 40 7 
+60 20 80 20 7
+80 20 80 40 7
+80 40 60 40 7 
+[END WALLS]
+[SECTOR]
+20 30
+[WALLS]
+100 20 100 40 3 
+100 20 120 20 3 
+120 20 120 40 3 
+100 40 110 50 3 
+110 50 120 40 3 
+[END WALLS]

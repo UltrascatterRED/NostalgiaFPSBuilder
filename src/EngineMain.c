@@ -155,7 +155,7 @@ void displayFrame()
 	Bft.frame1 = glutGet(GLUT_ELAPSED_TIME);
 	glutPostRedisplay();
 	// debug
-	printFPS(&Bft);
+	printFPS();
 }
 
 // glut callback function; checks if any new keys have been pressed down,
@@ -197,7 +197,9 @@ void checkKeysUp(unsigned char key, int x, int y)
 
 int main(int argc, char* argv[])
 {
-	/*glutInit(&argc, argv);
+	char levelFile[] = "TestLevelFile.txt";
+	loadLevel(levelFile);
+	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowPosition(0, 0); 
 	glutInitWindowSize(GL_WIN_WIDTH, GL_WIN_HEIGHT);
@@ -208,8 +210,6 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(displayFrame);
 	glutKeyboardFunc(checkKeysDown);
 	glutKeyboardUpFunc(checkKeysUp);
-	glutMainLoop();*/
-	char levelFile[] = "TestLevelFile.txt";
-	loadLevel(levelFile);
+	glutMainLoop();
 	return 0;
 }

@@ -75,3 +75,117 @@ LevelFileHandling.cpp:52:25: error: ‘hasSectorheader’ was not declared in th
 ## Error Log - Thu 2025-10-16 11:08:18 EDT ##
 ## Error Log - Thu 2025-10-16 11:13:27 EDT ##
 ## Error Log - Thu 2025-10-16 11:13:50 EDT ##
+## Error Log - Thu 2025-10-16 11:25:33 EDT ##
+## Error Log - Mon 2025-11-10 19:39:34 EST ##
+cc1plus: fatal error: GameStructs.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: Debug.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: Render.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: EngineMain.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: LevelFileHandling.cpp: No such file or directory
+compilation terminated.
+## Error Log - Mon 2025-11-10 19:49:40 EST ##
+cc1plus: fatal error: GameStructs.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: Debug.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: Render.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: EngineMain.cpp: No such file or directory
+compilation terminated.
+cc1plus: fatal error: LevelFileHandling.cpp: No such file or directory
+compilation terminated.
+## Error Log - Mon 2025-11-10 19:50:37 EST ##
+## Error Log - Tue 2025-11-11 17:22:05 EST ##
+Render.c: In function ‘updateWallParentSector’:
+Render.c:40:21: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+   40 |         *children[i].parentSector = newLoc;
+      |                     ^
+      |                     ->
+Render.c: In function ‘sortOldWallsZOrder’:
+Render.c:246:26: error: expected expression before ‘sector’
+  246 |         double proximity[sector->numChildren];
+      |                          ^~~~~~
+Render.c:247:29: error: expected expression before ‘sector’
+  247 |         for (int i = 0; i < sector->numChildren; i++)
+      |                             ^~~~~~
+Render.c:255:17: error: ‘proximity’ undeclared (first use in this function)
+  255 |                 proximity[i] = sqrt((a*a) + (b*b));
+      |                 ^~~~~~~~~
+Render.c:255:17: note: each undeclared identifier is reported only once for each function it appears in
+## Error Log - Tue 2025-11-11 17:26:11 EST ##
+## Error Log - Tue 2025-11-11 17:34:20 EST ##
+## Error Log - Tue 2025-11-11 17:40:41 EST ##
+## Error Log - Tue 2025-11-11 17:42:04 EST ##
+## Error Log - Tue 2025-11-11 17:46:14 EST ##
+## Error Log - Tue 2025-11-11 17:52:36 EST ##
+Render.c: In function ‘drawView’:
+Render.c:446:93: error: ‘children[j]’ is a pointer; did you mean to use ‘->’?
+  446 |             drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], children[j].color);
+      |                                                                                             ^
+      |                                                                                             ->
+## Error Log - Tue 2025-11-11 17:53:17 EST ##
+## Error Log - Tue 2025-11-11 17:54:55 EST ##
+## Error Log - Tue 2025-11-11 17:58:12 EST ##
+## Error Log - Tue 2025-11-11 19:32:29 EST ##
+## Error Log - Tue 2025-11-11 19:39:56 EST ##
+## Error Log - Wed 2025-11-12 15:39:22 EST ##
+## Error Log - Wed 2025-11-12 15:59:52 EST ##
+## Error Log - Wed 2025-11-12 16:03:22 EST ##
+## Error Log - Wed 2025-11-12 16:04:32 EST ##
+## Error Log - Wed 2025-11-12 16:42:59 EST ##
+## Error Log - Wed 2025-11-12 16:45:18 EST ##
+## Error Log - Wed 2025-11-12 16:47:27 EST ##
+## Error Log - Wed 2025-11-12 16:50:39 EST ##
+## Error Log - Wed 2025-11-12 16:52:29 EST ##
+## Error Log - Wed 2025-11-12 16:54:32 EST ##
+## Error Log - Wed 2025-11-12 16:56:27 EST ##
+## Error Log - Wed 2025-11-12 16:59:49 EST ##
+## Error Log - Thu 2025-11-13 18:09:58 EST ##
+## Error Log - Thu 2025-11-13 20:32:50 EST ##
+/usr/bin/ld: /tmp/ccpnHlMr.o: in function `sortSectorZOrder':
+Render.c:(.text+0xc3d): undefined reference to `updateWallParentSector'
+collect2: error: ld returned 1 exit status
+## Error Log - Thu 2025-11-13 20:33:21 EST ##
+## Error Log - Fri 2025-11-21 13:38:35 EST ##
+## Error Log - Fri 2025-11-21 13:42:23 EST ##
+Debug.c: In function ‘printFPS’:
+Debug.c:36:51: error: ‘bft’ undeclared (first use in this function); did you mean ‘Bft’?
+   36 |                 bftSample[nextSampleIdx] = 1000/(&bft->frame1-&bft->frame2);
+      |                                                   ^~~
+      |                                                   Bft
+Debug.c:36:51: note: each undeclared identifier is reported only once for each function it appears in
+EngineMain.c: In function ‘displayFrame’:
+EngineMain.c:158:9: error: too many arguments to function ‘printFPS’; expected 0, have 1
+  158 |         printFPS(&Bft);
+      |         ^~~~~~~~ ~~~~
+In file included from EngineMain.c:12:
+Debug.h:5:6: note: declared here
+    5 | void printFPS();
+      |      ^~~~~~~~
+## Error Log - Fri 2025-11-21 13:46:06 EST ##
+Debug.c: In function ‘printFPS’:
+Debug.c:36:54: error: invalid type argument of ‘->’ (have ‘bufferTime’)
+   36 |                 bftSample[nextSampleIdx] = 1000/(&Bft->frame1-&Bft->frame2);
+      |                                                      ^~
+Debug.c:36:67: error: invalid type argument of ‘->’ (have ‘bufferTime’)
+   36 |                 bftSample[nextSampleIdx] = 1000/(&Bft->frame1-&Bft->frame2);
+      |                                                                   ^~
+## Error Log - Fri 2025-11-21 13:47:49 EST ##
+## Error Log - Fri 2025-11-21 13:48:35 EST ##
+## Error Log - Fri 2025-11-21 13:49:37 EST ##
+## Error Log - Fri 2025-11-21 13:52:28 EST ##
+## Error Log - Fri 2025-11-21 13:55:04 EST ##
+## Error Log - Fri 2025-11-21 14:00:09 EST ##
+## Error Log - Fri 2025-11-21 16:30:30 EST ##
+Debug.c: In function ‘printFPS’:
+Debug.c:23:31: error: ‘displayFrameCounter’ undeclared (first use in this function); did you mean ‘displayFrame_Counter’?
+   23 |     printf("Counter is %d\n", displayFrameCounter);
+      |                               ^~~~~~~~~~~~~~~~~~~
+      |                               displayFrame_Counter
+Debug.c:23:31: note: each undeclared identifier is reported only once for each function it appears in
+## Error Log - Fri 2025-11-21 16:31:02 EST ##
+## Error Log - Fri 2025-11-21 16:53:22 EST ##

@@ -13,10 +13,13 @@
 #define GL_WIN_HEIGHT   (SCREEN_HEIGHT*PIXEL_SCALE)
 #define MSPF            50      // milliseconds per frame, used to intentionally limit frame rate; 1000/MSPF = FPS
 
+void retrieveChildWalls(sector* parent, wall* children[]);
+void updateWallParentSector(sector* oldLoc, sector* newLoc);
 void drawPixel(int x, int y, int color);
 void clearBackground();
 void clipBehindCamera(int *x1, int *y1, int *z1, int x2, int y2, int z2);
 void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color);
+void sortSectorZOrder();
 void drawView();
 
 #endif
