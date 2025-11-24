@@ -189,3 +189,71 @@ Debug.c:23:31: error: ‘displayFrameCounter’ undeclared (first use in this fu
 Debug.c:23:31: note: each undeclared identifier is reported only once for each function it appears in
 ## Error Log - Fri 2025-11-21 16:31:02 EST ##
 ## Error Log - Fri 2025-11-21 16:53:22 EST ##
+## Error Log - Fri 2025-11-21 17:01:06 EST ##
+## Error Log - Fri 2025-11-21 17:05:58 EST ##
+## Error Log - Fri 2025-11-21 17:07:59 EST ##
+## Error Log - Fri 2025-11-21 17:13:48 EST ##
+Render.c: In function ‘drawWall’:
+Render.c:247:21: error: ‘drawnPixels’ undeclared (first use in this function); did you mean ‘drawPixel’?
+  247 |                 if(!drawnPixels)
+      |                     ^~~~~~~~~~~
+      |                     drawPixel
+Render.c:247:21: note: each undeclared identifier is reported only once for each function it appears in
+Render.c: In function ‘drawView’:
+Render.c:428:5: error: ‘drawnPixels’ undeclared (first use in this function); did you mean ‘drawPixel’?
+  428 |     drawnPixels = {false};
+      |     ^~~~~~~~~~~
+      |     drawPixel
+Render.c:428:19: error: expected expression before ‘{’ token
+  428 |     drawnPixels = {false};
+      |                   ^
+## Error Log - Fri 2025-11-21 17:14:45 EST ##
+Render.c: In function ‘drawView’:
+Render.c:428:19: error: expected expression before ‘{’ token
+  428 |     drawnPixels = {false};
+      |                   ^
+## Error Log - Fri 2025-11-21 17:22:37 EST ##
+/usr/bin/ld: /tmp/ccM0kFqh.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccw0MY2d.o:(.bss+0x0): first defined here
+/usr/bin/ld: /tmp/ccPZ0Zqc.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccw0MY2d.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
+## Error Log - Fri 2025-11-21 17:23:53 EST ##
+/usr/bin/ld: /tmp/ccBUwbgY.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccDk0wuI.o:(.bss+0x0): first defined here
+/usr/bin/ld: /tmp/ccahbsix.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccDk0wuI.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
+## Error Log - Mon 2025-11-24 10:30:14 EST ##
+/usr/bin/ld: /tmp/ccH6h9n2.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccJWEPN5.o:(.bss+0x0): first defined here
+/usr/bin/ld: /tmp/cceadDUh.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccJWEPN5.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
+## Error Log - Mon 2025-11-24 10:35:31 EST ##
+/usr/bin/ld: /tmp/cckqv01O.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/cczw44be.o:(.bss+0x0): first defined here
+/usr/bin/ld: /tmp/ccqKqgCI.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/cczw44be.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
+## Error Log - Mon 2025-11-24 10:36:16 EST ##
+In file included from Debug.c:7:
+Render.h:25:13: warning: ‘drawnPixels’ initialized and declared ‘extern’
+   25 | extern bool drawnPixels[SCREEN_WIDTH][SCREEN_HEIGHT] = {false};
+      |             ^~~~~~~~~~~
+In file included from Render.c:4:
+Render.h:25:13: warning: ‘drawnPixels’ initialized and declared ‘extern’
+   25 | extern bool drawnPixels[SCREEN_WIDTH][SCREEN_HEIGHT] = {false};
+      |             ^~~~~~~~~~~
+In file included from EngineMain.c:13:
+Render.h:25:13: warning: ‘drawnPixels’ initialized and declared ‘extern’
+   25 | extern bool drawnPixels[SCREEN_WIDTH][SCREEN_HEIGHT] = {false};
+      |             ^~~~~~~~~~~
+/usr/bin/ld: /tmp/ccSRqNDO.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccnITbCp.o:(.bss+0x0): first defined here
+/usr/bin/ld: /tmp/ccVjM1Yf.o:(.bss+0x0): multiple definition of `drawnPixels'; /tmp/ccnITbCp.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
+## Error Log - Mon 2025-11-24 10:38:24 EST ##
+/usr/bin/ld: /tmp/cc6Gq24P.o: warning: relocation against `drawnPixels' in read-only section `.text'
+/usr/bin/ld: /tmp/cc6Gq24P.o: in function `resetDrawnPixels':
+Render.c:(.text+0x2e): undefined reference to `drawnPixels'
+/usr/bin/ld: /tmp/cc6Gq24P.o: in function `drawWall':
+Render.c:(.text+0x960): undefined reference to `drawnPixels'
+/usr/bin/ld: Render.c:(.text+0x9c4): undefined reference to `drawnPixels'
+/usr/bin/ld: Render.c:(.text+0x9fa): undefined reference to `drawnPixels'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status
+## Error Log - Mon 2025-11-24 10:45:13 EST ##
+## Error Log - Mon 2025-11-24 10:51:30 EST ##
+## Error Log - Mon 2025-11-24 11:19:49 EST ##

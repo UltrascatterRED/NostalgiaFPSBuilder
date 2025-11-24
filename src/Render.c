@@ -6,8 +6,19 @@
 #include "LevelFileHandling.h"
 #include "Debug.h"
 
-// DEV NOTE: Declare this variable in header file
 bool drawnPixels[SCREEN_WIDTH][SCREEN_HEIGHT] = {false};
+// Resets the drawnPixels bool array to false.
+// Should be called after every frame draw.
+void resetDrawnPixels()
+{
+    for(int i = 0; i < SCREEN_WIDTH; i++)
+    {
+        for(int j = 0; j < SCREEN_HEIGHT; j++)
+        {
+            drawnPixels[i][j] = false;    
+        }
+    }
+}
 
 // given a parent sector reference and a wall pointer buffer,
 // retrieves the child walls for that sector and writes their
@@ -186,6 +197,7 @@ void clipBehindCamera(int *x1, int *y1, int *z1, int x2, int y2, int z2)
 
 // draws a singular wall on the screen. All coordinate values handled
 // by this function are in SCREEN SPACE, not 3D space.
+int numDrawCalls = 0;
 void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
 {
 	// debug
@@ -242,106 +254,25 @@ void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
 		// pixels 
 		for(int y = by; y < ty; y++)
 		{
+            if(drawnPixels[x][y])
+            {
+                continue;
+            }
 			// debug: draw border of wall in different color
 			// Helpful for visually differentiating walls, esp. those of same color.
-			// Also looks kind of cool. Maybe turn into a shader effect or something
 			if(x == x1 || x == x2-1 || y == by || y == ty-1)
 			{
-				drawPixel(x, y, 9);
+                drawPixel(x, y, 9);
+                numDrawCalls++; //debug
+                drawnPixels[x][y] = true;
 				continue;
 			}
 			// end debug
 			drawPixel(x, y, color);
+            numDrawCalls++; //debug
+            drawnPixels[x][y] = true;
 		}
 	}
-}
-int OldWalls[][7] = 
-{
-	{-20, 100, 0, -20, 350, 0, 3},
-	{20, 100, 0, 20, 350, 0, 3},
-	{-80, 410, 0, -20, 350, 0, 3},
-	{20, 350, 0, 80, 410, 0, 3},
-	{-80, 490, 0, -180, 490, 0, 6},
-	{-80, 410, 0, -180, 410, 0, 6},
-	{-180, 490, 0, -180, 590, 0, 6},
-	{-180, 410, 0, -180, 310, 0, 6},
-	{-180, 590, 0, -380, 590, 0, 6},
-	{-180, 310, 0, -380, 310, 0, 6},
-	{-380, 590, 0, -380, 310, 0, 6},
-	{80, 410, 0, 80, 490, 0, 3},
-	{-80, 490, 0, -20, 550, 0, 3},
-	{80, 490, 0, 150, 560, 0, 1},
-	{20, 550, 0, 90, 620, 0, 1},
-	{150, 560, 0, 250, 560, 0, 1},
-	{90, 620, 0, 90, 720, 0, 1},
-	{250, 560, 0, 250, 720, 0, 1},
-	{130, 720, 0, 300, 720, 0, 5},
-	{300, 720, 0, 300, 870, 0, 5},
-	{90, 720, 0, 90, 870, 0, 5},
-	{90, 870, 0, 300, 870, 0, 5},
-	{-20, 550, 0, 20, 550, 0, 3}
-};
-// Each sub-array in OldWalls is one wall
-// FIELDS:
-// x1, y1, z1, x2, y2, z2, color
-int numFields = 7; // hardcoded for now; must update this manually
-// size in bytes / size of int / number of fields per wall = number of walls
-int numOldWalls = 23; // hardcoded for now; must update this manually
-
-// sort the child walls of the input parent sector relative to the player
-// DEV NOTE (11-10-25): Major refactor of this function ongoing
-void sortOldWallsZOrder(sector* parent)
-{
-	// Proximity of each wall to player. Calculated with Pythagorean Theorem.
-	// Used to sort walls by draw order.
-	double proximity[parent->numChildren];
-	for (int i = 0; i < parent->numChildren; i++)
-	{
-		// center point of wall
-		int wallX = (OldWalls[i][0] + OldWalls[i][3])/2;
-		int wallY = (OldWalls[i][1] + OldWalls[i][4])/2;
-		// distance to player = sqrt(a squared + b squared)
-		int a = wallX - Player.x;
-		int b = wallY - Player.y;
-		proximity[i] = sqrt((a*a) + (b*b));
-	}
-	// sort walls here
-	// bubble sort probably sucks for this, but easier to implement quickly
-	double proxSwp;
-	int wallSwp;
-	for (int i = 0; i < numOldWalls; i++)
-	{
-		for (int j = 0; j < numOldWalls-1; j++)
-		{
-			if(proximity[j] < proximity[j+1])
-			{
-				proxSwp = proximity[j];
-				proximity[j] = proximity[j+1];
-				proximity[j+1] = proxSwp;
-				for (int k = 0; k < numFields; k++)
-				{
-					wallSwp = OldWalls[j][k];
-					OldWalls[j][k] = OldWalls[j+1][k];
-					OldWalls[j+1][k] = wallSwp;
-				}	
-			}
-		}
-	}
-	// debug
-	/*for (int i = 0; i < numOldWalls; i++)
-	{
-		printf("%f\n", proximity[i]);
-	}
-	for (int i = 0; i < numOldWalls; i++)
-	{
-		printf("Wall %d:\t", i);
-		for (int j = 0; j < numFields; j++)
-		{
-			printf("%d	", OldWalls[i][j]);
-		}
-		printf("\n");
-	} 
-	printf("-----------\n");*/
 }
 // sorts sectors by current distance to player (greatest to least)
 // DEV NOTE: refactor least to greatest for overdraw optimization when ready;
@@ -390,10 +321,9 @@ void sortWallsZOrder()
 	wall wallSwp;
 	for (int i = 0; i < numWalls; i++)
 	{
-
 		for (int j = 0; j < numWalls-1; j++)
 		{
-			if(Walls[j].playerProximity < Walls[j+1].playerProximity)
+			if(Walls[j].playerProximity > Walls[j+1].playerProximity)
 			{
                 wallSwp = Walls[j];
                 Walls[j] = Walls[j+1];
@@ -405,6 +335,8 @@ void sortWallsZOrder()
 // Renders the current view of the 3D environment
 void drawView()
 {
+    numDrawCalls = 0;
+    resetDrawnPixels();
 	float pCos = TrigVals.cos[Player.angle];
 	float pSin = TrigVals.sin[Player.angle];
     // render calculation buffer. Each render
@@ -513,4 +445,5 @@ void drawView()
         }
         drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], Walls[i].color);
     }
+    printf("Draw calls this frame: %d\n", numDrawCalls);
 }

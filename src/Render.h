@@ -22,4 +22,6 @@ void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color);
 void sortSectorZOrder();
 void drawView();
 
+extern bool drawnPixels[SCREEN_WIDTH][SCREEN_HEIGHT];
+
 #endif
