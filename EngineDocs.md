@@ -4,6 +4,7 @@ This document is a comprehensive guide to the features and use of my doom-like e
 ## Contents
 * Overview
 * Terminology
+* Limitations
 * Initialization
 * Engine Behavior
 * Drawing Frames
@@ -25,6 +26,17 @@ The engine makes heavy use of an OpenGL library for C called Glut. Glut handles 
 **Screen Space** - Refers to the 2D output window (aka screen). Used to contextualize coordinate values.
 
 **Environment Space** - Refers to the 3D enviroment being represented in the engine. Used to contextualize coordinate values.
+
+**Sector** - Refers to a group of at least 2 **walls**, used to form a more complex shape. Walls in the same sector share their Z height and location, and may have **caps** drawn between them.
+
+**Cap** - Refers to the horizontal surfaces that may be drawn as part of a sector. Often used to visually represent floors and/or ceilings.
+
+**Wall** - Refers to a rectangular vertical surface with 4 defining points. Walls will usually belong to a **sector**.
+
+# Limitations
+* Wall orientation (and by extension, sector orientation) will always be perfectly vertical. This is because of the rendering logic this engine uses (vertical lines of pixels).
+* Cap orientation will always be perfectly horizontal, also due to rendering logic.
+* Sectors must always be *convex*. A convex sector's center point will always be inside its geometry. This is important because certain rendering calculations may evaluate incorrectly otherwise (i.e. incorrect Z-order when drawing to the screen).
 
 # Components
 ## Global Values

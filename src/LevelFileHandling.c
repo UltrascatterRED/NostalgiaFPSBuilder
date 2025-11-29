@@ -221,6 +221,10 @@ void loadLevel(char filename[])
                 }
                 // 4) calculate centerX, centerY
                 // divide by numChildren*2 to account for redundant coord summation
+                // DEV NOTE: these averages are off if there are gaps in the sector
+                //           (i.e. doorways). Consider implementing a buffer of some
+                //           kind to store unique verts so they can be enumerated for
+                //           a divisor here.
                 centerX = (int) roundf(xSum / (float) (numChildren*2));
                 centerY = (int) roundf(ySum / (float) (numChildren*2));
                 // debug
@@ -235,7 +239,8 @@ void loadLevel(char filename[])
             // recalculated at runtime
 			// "false" is default value of hasCaps (see struct definition 
             // in GameStructs.h)
-			sector newSector = { bottomZ, topZ, centerX, centerY, numChildren, 0, false };
+            // 9 hard-codes all caps to be white; will read color from input file eventually
+			sector newSector = { bottomZ, topZ, centerX, centerY, numChildren, 0, true, 9 };
 			Sectors[numSectors - 1] = newSector;
             //numSectors++;
 		}

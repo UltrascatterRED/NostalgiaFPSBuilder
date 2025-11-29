@@ -197,7 +197,8 @@ void checkKeysUp(unsigned char key, int x, int y)
 
 int main(int argc, char* argv[])
 {
-	char levelFile[] = "TestLevelFile.txt";
+	//char* levelFile = "TestLevelFile.txt";
+	char* levelFile = argv[1];
 	loadLevel(levelFile);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);

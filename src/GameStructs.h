@@ -44,6 +44,7 @@ typedef struct
 	int playerProximity; // used to determine onscreen draw order of sectors
 	// sector must have AT LEAST 2 walls to draw valid caps
 	bool hasCaps; // used to determine whether to draw floors/ceilings (aka sector "caps")
+    int capColor; // same color codes as walls
 }sector;
 
 // wall-specific information (all other info handled by struct sector)

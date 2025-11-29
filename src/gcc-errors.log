@@ -257,3 +257,154 @@ collect2: error: ld returned 1 exit status
 ## Error Log - Mon 2025-11-24 10:45:13 EST ##
 ## Error Log - Mon 2025-11-24 10:51:30 EST ##
 ## Error Log - Mon 2025-11-24 11:19:49 EST ##
+## Error Log - Mon 2025-11-24 12:42:54 EST ##
+Render.c: In function ‘drawSector’:
+Render.c:294:9: error: ‘wallX’ undeclared (first use in this function); did you mean ‘wall’?
+  294 |         wallX[0] = children[i].x1;
+      |         ^~~~~
+      |         wall
+Render.c:294:9: note: each undeclared identifier is reported only once for each function it appears in
+Render.c:294:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  294 |         wallX[0] = children[i].x1;
+      |                               ^
+      |                               ->
+Render.c:295:9: error: ‘wallY’ undeclared (first use in this function); did you mean ‘wall’?
+  295 |         wallY[0] = children[i].y1;
+      |         ^~~~~
+      |         wall
+Render.c:295:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  295 |         wallY[0] = children[i].y1;
+      |                               ^
+      |                               ->
+Render.c:296:9: error: ‘wallZ’ undeclared (first use in this function); did you mean ‘wall’?
+  296 |         wallZ[0] = sectorBottomZ;
+      |         ^~~~~
+      |         wall
+Render.c:297:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  297 |         wallX[1] = children[i].x2;
+      |                               ^
+      |                               ->
+Render.c:298:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  298 |         wallY[1] = children[i].y2;
+      |                               ^
+      |                               ->
+Render.c:304:9: error: ‘x1’ undeclared (first use in this function); did you mean ‘y1’?
+  304 |         x1 = wallX[0] - Player.x;
+      |         ^~
+      |         y1
+Render.c:306:9: error: ‘x2’ undeclared (first use in this function)
+  306 |         x2 = wallX[1] - Player.x;
+      |         ^~
+Render.c:307:9: error: ‘y2’ undeclared (first use in this function); did you mean ‘yn’?
+  307 |         y2 = wallY[1] - Player.y;
+      |         ^~
+      |         yn
+Render.c:309:26: error: ‘pCos’ undeclared (first use in this function)
+  309 |         wallX[0] = (x1 * pCos) - (y1 * pSin);
+      |                          ^~~~
+Render.c:309:40: error: ‘pSin’ undeclared (first use in this function)
+  309 |         wallX[0] = (x1 * pCos) - (y1 * pSin);
+      |                                        ^~~~
+Render.c:351:32: error: ‘FOV’ undeclared (first use in this function)
+  351 |         wallX[0] = (wallX[0] * FOV) / wallY[0] + (SCREEN_WIDTH / 2);
+      |                                ^~~
+Render.c:373:89: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  373 |         drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], children[i].color);
+      |                                                                                         ^
+      |                                                                                         ->
+Render.c: In function ‘drawView’:
+Render.c:449:5: error: implicit declaration of function ‘sortSectorsZorder’; did you mean ‘sortSectorsZOrder’? [-Wimplicit-function-declaration]
+  449 |     sortSectorsZorder();
+      |     ^~~~~~~~~~~~~~~~~
+      |     sortSectorsZOrder
+## Error Log - Mon 2025-11-24 12:44:33 EST ##
+Render.c: In function ‘drawSector’:
+Render.c:302:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  302 |         wallX[0] = children[i].x1;
+      |                               ^
+      |                               ->
+Render.c:303:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  303 |         wallY[0] = children[i].y1;
+      |                               ^
+      |                               ->
+Render.c:305:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  305 |         wallX[1] = children[i].x2;
+      |                               ^
+      |                               ->
+Render.c:306:31: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  306 |         wallY[1] = children[i].y2;
+      |                               ^
+      |                               ->
+Render.c:381:89: error: ‘children[i]’ is a pointer; did you mean to use ‘->’?
+  381 |         drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], children[i].color);
+      |                                                                                         ^
+      |                                                                                         ->
+Render.c: In function ‘drawView’:
+Render.c:448:5: error: implicit declaration of function ‘sortSectorsZorder’; did you mean ‘sortSectorsZOrder’? [-Wimplicit-function-declaration]
+  448 |     sortSectorsZorder();
+      |     ^~~~~~~~~~~~~~~~~
+      |     sortSectorsZOrder
+## Error Log - Mon 2025-11-24 12:45:35 EST ##
+Render.c: In function ‘drawView’:
+Render.c:448:5: error: implicit declaration of function ‘sortSectorsZorder’; did you mean ‘sortSectorsZOrder’? [-Wimplicit-function-declaration]
+  448 |     sortSectorsZorder();
+      |     ^~~~~~~~~~~~~~~~~
+      |     sortSectorsZOrder
+## Error Log - Mon 2025-11-24 12:46:11 EST ##
+## Error Log - Mon 2025-11-24 12:47:42 EST ##
+## Error Log - Mon 2025-11-24 12:49:41 EST ##
+## Error Log - Mon 2025-11-24 12:55:16 EST ##
+## Error Log - Wed 2025-11-26 20:30:01 EST ##
+Render.c: In function ‘isPlayerInsideSector’:
+Render.c:221:31: error: expected ‘;’ before ‘}’ token
+  221 |     if(xDiff == 0) {xDiff == 1};
+      |                               ^
+      |                               ;
+Render.c:239:35: error: expected ‘;’ before ‘}’ token
+  239 |         if(xDiff == 0) {xDiff == 1};
+      |                                   ^
+      |                                   ;
+Render.c: In function ‘drawCap’:
+Render.c:480:69: error: ‘by1’ undeclared (first use in this function); did you mean ‘by’?
+  480 |             int lrp_by = delta_by * (x - x_start + 0.5) / delta_x + by1;
+      |                                                                     ^~~
+      |                                                                     by
+Render.c:480:69: note: each undeclared identifier is reported only once for each function it appears in
+Render.c:481:69: error: ‘ty1’ undeclared (first use in this function); did you mean ‘ty’?
+  481 |             int lrp_ty = delta_ty * (x - x_start + 0.5) / delta_x + ty1;
+      |                                                                     ^~~
+      |                                                                     ty
+Render.c:503:46: warning: comparison between pointer and integer
+  503 |                 if(x == x1 || x == x2-1 || y == by || y == ty-1)
+      |                                              ^~
+Render.c:503:57: warning: comparison between pointer and integer
+  503 |                 if(x == x1 || x == x2-1 || y == by || y == ty-1)
+      |                                                         ^~
+Render.c: In function ‘drawSector’:
+Render.c:689:24: error: ‘sectorTopz’ undeclared (first use in this function); did you mean ‘sectorTopZ’?
+  689 |     else if(Player.z > sectorTopz)
+      |                        ^~~~~~~~~~
+      |                        sectorTopZ
+## Error Log - Wed 2025-11-26 20:34:34 EST ##
+Render.c: In function ‘drawSector’:
+Render.c:689:24: error: ‘sectorTopz’ undeclared (first use in this function); did you mean ‘sectorTopZ’?
+  689 |     else if(Player.z > sectorTopz)
+      |                        ^~~~~~~~~~
+      |                        sectorTopZ
+Render.c:689:24: note: each undeclared identifier is reported only once for each function it appears in
+## Error Log - Wed 2025-11-26 20:35:05 EST ##
+## Error Log - Wed 2025-11-26 20:42:42 EST ##
+## Error Log - Thu 2025-11-27 15:11:56 EST ##
+## Error Log - Thu 2025-11-27 15:15:37 EST ##
+## Error Log - Thu 2025-11-27 15:20:49 EST ##
+## Error Log - Thu 2025-11-27 15:25:31 EST ##
+## Error Log - Thu 2025-11-27 15:29:16 EST ##
+## Error Log - Sat 2025-11-29 15:46:07 EST ##
+EngineMain.c: In function ‘main’:
+EngineMain.c:200:28: error: invalid initializer
+  200 |         char levelFile[] = argv[0];
+      |                            ^~~~
+## Error Log - Sat 2025-11-29 15:46:43 EST ##
+## Error Log - Sat 2025-11-29 15:47:33 EST ##
+## Error Log - Sat 2025-11-29 15:48:16 EST ##
+## Error Log - Sat 2025-11-29 15:49:29 EST ##

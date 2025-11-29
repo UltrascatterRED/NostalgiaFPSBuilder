@@ -102,6 +102,164 @@ void updateWallsProx()
         //printf("Wall %d prox = %d\n", i, Walls[i].playerProximity);
     }
 }
+// Given an array of ints and its length, returns the maximum value within
+// the array.
+int getIntMax(int arr[], int size)
+{
+    int max = arr[0];
+    for(int i = 1; i < size; i++)
+    {
+        if(arr[i] > max)
+        {
+            max = arr[i];
+        }
+    }
+    return max;
+}
+// Given an array of ints and its length, returns the minimum value within
+// the array.
+int getIntMin(int arr[], int size)
+{
+    int min = arr[0];
+    for(int i = 1; i < size; i++)
+    {
+        if(arr[i] < min)
+        {
+            min = arr[i];
+        }
+    }
+    return min;
+}
+// Given an array of ints and its length, returns the average of the array's
+// elements
+int avgIntArr(int arr[], int size)
+{
+    int sum;
+    for(int i = 0; i < size; i++)
+    {
+        sum += arr[i];
+    }
+    // typecasting for better rounding accuracy
+    int avg = (int) roundf((float)sum / (float)size);
+    return avg;
+}
+// the standard implementation of these is annoying so I'm making my own
+float getMaxFloat(float f1, float f2)
+{
+    if(f1 > f2)
+    {
+        return f1;
+    }
+    else
+    {
+        return f2;
+    }
+}
+float getMinFloat(float f1, float f2)
+{
+    if(f1 < f2)
+    {
+        return f1;
+    }
+    else
+    {
+        return f2;
+    }
+}
+int getMaxInt(int i1, int i2)
+{
+    if(i1 > i2)
+    {
+        return i1;
+    }
+    else
+    {
+        return i2;
+    }
+}
+int getMinInt(int i1, int i2)
+{
+    if(i1 < i2)
+    {
+        return i1;
+    }
+    else
+    {
+        return i2;
+    }
+}
+
+// Given a sector for comparison, checks whether the player is located inside
+// that sector.
+// Useful for conditional rendering/culling.
+bool isPlayerInsideSector(sector* sec)
+{
+    // is player between top/bottom Z bounds of sector
+    bool insideZBounds = false;
+    // is player inside top-down footprint of sector (X/Y plane)
+    bool insideFootprint = false;
+
+    insideZBounds = Player.z > sec->bottomZ && Player.z < sec->topZ;
+    
+    // determine how many walls of this sector are intersected by a
+    // raycast from the player's current position & angle.
+    // Even result --> outside sector footprint
+    // Odd result --> inside sector footprint
+
+    wall* children[sec->numChildren];
+    retrieveChildWalls(sec, children);
+
+    // misc values for determining line segment intersections between walls and
+    // player raycast
+    int raycastLength = 5000; // arbitrary high number exceeding sectors' typical size
+    // coords of raycast endpoint; start point is player x and y
+    int xDiff; // stores x2-x1 calculations to check against division by 0
+    int rayX = TrigVals.cos[Player.angle] * raycastLength;
+    int rayY = TrigVals.sin[Player.angle] * raycastLength;
+    // slope and y-intercept of player raycast
+    xDiff = rayX - Player.x;
+    if(xDiff == 0) { xDiff == 1; }
+    float mPlayer = (float)(rayY - Player.y) / (float)xDiff;
+    int bPlayer = Player.y - (Player.x * mPlayer);
+
+    int wx1, wx2, wy1, wy2; // storage for wall coords, mainly for readability
+    float mWall; // slope for wall 
+    int bWall; // y-intercept
+
+    int iX, iY; //possible intersection point
+    int numIntersections = 0;
+    for(int i = 0; i < sec->numChildren; i++)
+    {
+        wx1 = children[i]->x1;
+        wy1 = children[i]->y1;
+        wx2 = children[i]->x2;
+        wy2 = children[i]->y2;
+
+        xDiff = wx2 - wx1;
+        if(xDiff == 0) { xDiff == 1; }
+        // calculate slope and y-intercept for this wall
+        mWall = (float)(wy2 - wy1) / (float)xDiff;
+        bWall = wy1 - (wx1 * mWall);
+        // check if intersection interval exists
+        if(getMaxInt(Player.x, rayX) < getMinInt(wx1, wx2)) { continue; }
+        // parallel lines cannot intersect
+        if(mPlayer == mWall) { continue; }
+
+        iX = (int) roundf((float)(bWall - bPlayer) / (mWall - mPlayer));
+
+        // check that x coord of calculated intersection exists on intersection interval
+        if(iX < getMaxInt(getMinInt(wx1, wx2), getMinInt(Player.x, rayX)) ||
+            iX > getMinInt(getMaxInt(wx1, wx2), getMaxInt(Player.x, rayX)))
+        { 
+            continue;
+        }
+        // all checks passed, therefore raycast and wall intersect
+        numIntersections++;
+    }
+    insideFootprint = numIntersections % 2 == 1;
+    bool insideSector = insideZBounds && insideFootprint;
+    return insideSector;
+}
 
 void drawPixel(int x, int y, int color)
 {
@@ -197,7 +355,7 @@ void clipBehindCamera(int *x1, int *y1, int *z1, int x2, int y2, int z2)
 
 // draws a singular wall on the screen. All coordinate values handled
 // by this function are in SCREEN SPACE, not 3D space.
-int numDrawCalls = 0;
+//int numDrawCalls = 0; //debug
 void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
 {
 	// debug
@@ -221,7 +379,7 @@ void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
 	int delta_ty = ty2 - ty1;
 	// set delta_x to 1 if 0 to prevent dividing by zero
 	int delta_x = x2 - x1; if(delta_x == 0) { delta_x = 1; }
-	int x_start = x1; // store initial x1 value, which is needed for wall drawing
+	int x_start = x1; // store initial x1 value, which is needed for lerp calculations 
 
 	// clip x1, x2 to player view in order to still draw wall. Without this
 	// operation, the points may end up out-of-view of the screen, and the wall
@@ -263,80 +421,108 @@ void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
 			if(x == x1 || x == x2-1 || y == by || y == ty-1)
 			{
                 drawPixel(x, y, 9);
-                numDrawCalls++; //debug
+                //numDrawCalls++; //debug
                 drawnPixels[x][y] = true;
 				continue;
 			}
 			// end debug
 			drawPixel(x, y, color);
-            numDrawCalls++; //debug
+            //numDrawCalls++; //debug
             drawnPixels[x][y] = true;
 		}
 	}
 }
-// sorts sectors by current distance to player (greatest to least)
-// DEV NOTE: refactor least to greatest for overdraw optimization when ready;
-//           Must program optimization first
-void sortSectorZOrder()
+// Given [input params], draws a single sector cap on the screen.
+// Intended to be called at the end of each call to drawSector().
+// FIELDS:
+//      x1 : leftmost screen-space x
+//      x2 : rightmost screen-space x
+//      by[] : the bottom screen-space y coords to lerp between.
+//      ty[] : the top screen-space y coords to lerp between.
+//      numLerps : the number of separate linear interpolation (lerp)
+//                 operations to perform when drawing this cap. Will
+//                 always equal length of by/ty arrays minus 1.
+//      sec : a pointer to the sector whose caps are being drawn. Used
+//            to pull out necessary sector data.
+void drawCap(int x1, int x2, int by[], int ty[], int numLerps, sector* sec)
 {
-	// sort sectors here
-	// bubble sort probably sucks for this, but easier to implement quickly
-	sector secSwp;
-	for (int i = 0; i < numSectors; i++)
-	{
-		for (int j = 0; j < numSectors-1; j++)
-		{
-			if(Sectors[j].playerProximity < Sectors[j+1].playerProximity)
-			{
-                // swap corresponding sectors' positions in global Sectors
-                // array
-                printf("SWAPPING SECTORS\n");
-                sector* sec1 = &Sectors[j];
-                sector* sec2 = &Sectors[j+1];
-                //printSectorInfo(sec1);
-                //printSectorInfo(sec2);
-                // propagate swapped sector locations to child walls
-                // DEV NOTE (11-13-25): This use of the 
-                //      updateWallParentSector() function is flawed
-                //      because there is no swap buffer for the sector
-                //      pointers. Must devise something like that to
-                //      fix visual bugs.
-                swapWallParentSectors(sec1, sec2);
+    // Validation: exit function if sector does not have caps
+    if(!sec->hasCaps) { return; }
+    //printf("Drawing a cap\n");
 
-                secSwp = Sectors[j];
-                Sectors[j] = Sectors[j+1];
-                Sectors[j+1] = secSwp;
-                printf("SWAP COMPLETE\n");
-			}
-		}
-	}
+    // clip x1, x2 to camera view
+	if(x1 < 1) { x1 = 1; }
+	if(x1 > SCREEN_WIDTH - 1) { x1 = SCREEN_WIDTH - 1; }
+	if(x2 < 1) { x2 = 1; }
+	if(x2 > SCREEN_WIDTH - 1) { x2 = SCREEN_WIDTH - 1; }
+    // 3 nested loops is profoundly ugly, but we're just drawing pixels here.
+    // shouldn't be too slow in practice, it never scales big enough to
+    // be problematic
+    for(int x = x1; x < x2; x++)
+    {
+        // DEV NOTE: Lerps are not necessarily vertically aligned, so the below loop
+        // is likely flawed. Alternatively, I probably need to lerp in THIS loop,
+        // and check if the next ty value is reached. if it is, shift to the next lerp.
+
+
+        for(int lrp = 0; lrp < numLerps; lrp++)
+        {
+            // "by" is short for bottom y, aka y coords of bottom edge of cap
+            int delta_by = by[lrp+1] - by[lrp];
+            // "ty" is likewise short for top y, the y coords of top edge of cap
+            int delta_ty = ty[lrp+1] - ty[lrp];
+            // set delta_x to 1 if 0 to prevent dividing by zero
+            int delta_x = x2 - x1; if(delta_x == 0) { delta_x = 1; }
+            // store initial x1 value for this lerp, needed for lerp calculations
+            int x_start = x1; 
+            // lerp using calculated constants for this loop
+            // DEV NOTE: see lerp formulas in drawWall() for ref
+
+            // 0.5 needed for "rounding issues", investigate further.
+            // Current conjecture is that this value "nudges" the current coordinates
+            // to the correct placement before int truncation
+            // These are the lerp'd y  values per x-coord iteration
+            int lrp_by = delta_by * (x - x_start + 0.5) / delta_x + by[lrp];
+            int lrp_ty = delta_ty * (x - x_start + 0.5) / delta_x + ty[lrp];
+            
+            // start next lerp operation if end coord for this lerp reached
+            if(lrp_by >= by[lrp+1] || lrp_ty >= ty[lrp+1]) { continue; }
+
+            // clip lrp_by, lrp_ty to player view. Same reasoning as x clipping above.
+            if(lrp_by < 1) { lrp_by = 1; }
+            if(lrp_by > SCREEN_HEIGHT - 1) { lrp_by = SCREEN_HEIGHT - 1; }
+            if(lrp_ty < 1) { lrp_ty = 1; }
+            if(lrp_ty > SCREEN_HEIGHT - 1) { lrp_ty = SCREEN_HEIGHT - 1; }
+            
+            for(int y = by[lrp]; y < ty[lrp]; y++)
+            {
+                // DEV NOTE: caps are currently overdrawn, so this code serves no
+                //           purpose at the moment; caps would simply not render lol
+                //if(drawnPixels[x][y])
+                //{
+                //    continue;
+                //}
+
+                // debug: draw border of wall in different color
+                // Helpful for visually differentiating walls, esp. those of same color.
+                if(x == x1 || x == x2-1 || y == by[lrp] || y == ty[lrp]-1)
+                {
+                    drawPixel(x, y, 9); // 9 hard-coded for white outline
+                    //numDrawCalls++; //debug
+                    drawnPixels[x][y] = true;
+                    continue;
+                }
+                // end debug
+
+                drawPixel(x, y, sec->capColor);
+                //numDrawCalls++; //debug
+                drawnPixels[x][y] = true;
+            }
+        }
+    }
 }
-// Sorts walls by current distance to player, closest to farthest.
-// Walls are sorted this way to accommodate overdraw optimizations.
-void sortWallsZOrder()
+void drawSector(sector* sec)
 {
-    updateWallsProx(); 
-	// sort walls here
-	// bubble sort probably sucks for this, but easier to implement quickly
-	wall wallSwp;
-	for (int i = 0; i < numWalls; i++)
-	{
-		for (int j = 0; j < numWalls-1; j++)
-		{
-			if(Walls[j].playerProximity > Walls[j+1].playerProximity)
-			{
-                wallSwp = Walls[j];
-                Walls[j] = Walls[j+1];
-                Walls[j+1] = wallSwp;
-			}
-		}
-	}
-}
-// Renders the current view of the 3D environment
-void drawView()
-{
-    numDrawCalls = 0;
-    resetDrawnPixels();
 	float pCos = TrigVals.cos[Player.angle];
 	float pSin = TrigVals.sin[Player.angle];
     // render calculation buffer. Each render
@@ -346,29 +532,32 @@ void drawView()
 	int wallX[4], wallY[4], wallZ[4];
 	int FOV = 200; // DEV NOTE: investigate what units this value is
 	int x1, y1, x2, y2;
-	// sort sectors for correct draw order
-	sortWallsZOrder();
+    // DEV NOTE: array size hard-coded to arbitrary high number for now.
+    //           will need to calculate/store number of verts in sector
+    //           (i.e. store as a field in struct sector at file read time)
+    int ssX[40]; // screen-space x coords of sector; top-bottom coord pairs share same x value
+    int ssBottomY[40]; // screen-space bottom y coords of sector
+    int ssTopY[40]; // screen-space top y coords of sector
+    int by[40]; // bottom-y coords of cap to be drawn
+    int ty[40]; // top-y coords of cap to be drawn
+    int num_ssCoords = 0; // track number of stored coordinates in ssWallX/ssWallY
+    // get all child walls, iterate over them to render
+    wall* children[sec->numChildren];
+    retrieveChildWalls(sec, children);
 
-    int sectorBottomZ;
-    int sectorTopZ;
-    for(int i = 0; i < numWalls; i++)
+    int sectorBottomZ = sec->bottomZ;
+    int sectorTopZ = sec->topZ;
+
+    for(int i = 0; i < sec->numChildren; i++)
     {
-        // look up child walls, save refs
-        //wall* children[Sectors[i].numChildren];
-        //retrieveChildWalls(&Sectors[i], children);
-
-        sectorBottomZ = Walls[i].parentSector->bottomZ;
-        sectorTopZ = Walls[i].parentSector->topZ;
-        // debug
-        //printf("SECTOR %d (%p)-> %d children:\n", i, &Sectors[i], Sectors[i].numChildren);
 
         // absolute world position of the wall's 4 points; these change as the
         // player moves and rotates
-        wallX[0] = Walls[i].x1;
-        wallY[0] = Walls[i].y1;
+        wallX[0] = children[i]->x1;
+        wallY[0] = children[i]->y1;
         wallZ[0] = sectorBottomZ;
-        wallX[1] = Walls[i].x2;
-        wallY[1] = Walls[i].y2;
+        wallX[1] = children[i]->x2;
+        wallY[1] = children[i]->y2;
         wallZ[1] = sectorBottomZ;
         // debug
         //printf("  WALL %d : x1=%d, y1=%d, z1=%d, x2=%d, y2=%d, z2=%d\n\tparent=%p\n",
@@ -443,7 +632,186 @@ void drawView()
             //printf("[]--> SKIPPED WALL DRAW\n");
             continue; 
         }
-        drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], Walls[i].color);
+        // store screen-space coords for later parsing; used to determine cap rendering
+        // X coords
+        ssX[i*2] = wallX[0];
+        ssX[i*2+1] = wallX[1];
+        // Y coords
+        ssBottomY[i*2] = wallY[0];
+        ssBottomY[i*2+1] = wallY[1];
+        ssTopY[i*2] = wallY[2];
+        ssTopY[i*2+1] = wallY[3];
+
+        num_ssCoords += 4;
+
+        drawWall(wallX[0], wallX[1], wallY[0], wallY[1], wallY[2], wallY[3], children[i]->color);
     }
-    printf("Draw calls this frame: %d\n", numDrawCalls);
+     
+    // check for caps to be drawn, sort coords & call drawCap() as needed
+    //void drawCap(int x1, int x2, int by[], int ty[], int numLerps, sector* sec)
+    // Player inside sector? --> draw both caps
+    if(isPlayerInsideSector(sec))
+    {
+        // both caps 
+        // sort captured screen-space wall coords into by[] and ty[] arrays
+        // to be passed to drawCap()
+        
+        // average y coord of ssTopY[]
+        int tAvg = avgIntArr(ssTopY, num_ssCoords/2);
+        // average y coord of ssBottomY[]
+        int bAvg = avgIntArr(ssBottomY, num_ssCoords/2);
+        int xMin = getIntMax(ssX, num_ssCoords/2);
+        int xMax = getIntMin(ssX, num_ssCoords/2);
+        for(int i = 0; i < num_ssCoords/2; i++)
+        {
+            if(ssBottomY[i] < bAvg)
+            {
+                by[i] = ssBottomY[i];
+            }
+            else
+            {
+                ty[i] = ssBottomY[i];
+            }
+        }
+        // draw cap with calculated inputs
+        drawCap(xMin, xMax, by, ty, num_ssCoords/2 - 1, sec);
+
+        for(int i = 0; i < num_ssCoords/2; i++)
+        {
+            if(ssTopY[i] < tAvg)
+            {
+                by[i] = ssTopY[i];
+            }
+            else
+            {
+                ty[i] = ssTopY[i];
+            }
+        }
+        // draw cap with calculated inputs
+        drawCap(xMin, xMax, by, ty, num_ssCoords/2 - 1, sec);
+    }
+    // Player outside sector? --> draw either top or bottom cap (depending on Player z)
+    else if(Player.z > sectorTopZ)
+    {
+        // top cap
+        // sort captured screen-space wall coords into by[] and ty[] arrays
+        // to be passed to drawCap()
+        // average y coord of ssBottomY[]
+        int tAvg = avgIntArr(ssTopY, num_ssCoords/2);
+        int xMin = getIntMax(ssX, num_ssCoords/2);
+        int xMax = getIntMin(ssX, num_ssCoords/2);
+
+        for(int i = 0; i < num_ssCoords/2; i++)
+        {
+            if(ssTopY[i] < tAvg)
+            {
+                by[i] = ssTopY[i];
+            }
+            else
+            {
+                ty[i] = ssTopY[i];
+            }
+        }
+        // draw cap with calculated inputs
+        drawCap(xMin, xMax, by, ty, num_ssCoords/2 - 1, sec);
+    }
+    else if(Player.z < sectorBottomZ)
+    {
+        // bottom cap
+        // sort captured screen-space wall coords into by[] and ty[] arrays
+        // to be passed to drawCap()
+
+        // average y coord of ssBottomY[]
+        int bAvg = avgIntArr(ssBottomY, num_ssCoords/2);
+        int xMin = getIntMax(ssX, num_ssCoords/2);
+        int xMax = getIntMin(ssX, num_ssCoords/2);
+        for(int i = 0; i < num_ssCoords/2; i++)
+        {
+            if(ssBottomY[i] < bAvg)
+            {
+                by[i] = ssBottomY[i];
+            }
+            else
+            {
+                ty[i] = ssBottomY[i];
+            }
+        }
+        // draw cap with calculated inputs
+        drawCap(xMin, xMax, by, ty, num_ssCoords/2 - 1, sec);
+    }
+    
+}
+// sorts sectors by current distance to player (greatest to least)
+// DEV NOTE: refactor least to greatest for overdraw optimization when ready;
+//           Must program optimization first
+void sortSectorsZOrder()
+{
+	// sort sectors here
+	// bubble sort probably sucks for this, but easier to implement quickly
+    updateSectorsProx();
+	sector secSwp;
+	for (int i = 0; i < numSectors; i++)
+	{
+		for (int j = 0; j < numSectors-1; j++)
+		{
+			if(Sectors[j].playerProximity > Sectors[j+1].playerProximity)
+			{
+                // swap corresponding sectors' positions in global Sectors
+                // array
+                sector* sec1 = &Sectors[j];
+                sector* sec2 = &Sectors[j+1];
+                //printSectorInfo(sec1);
+                //printSectorInfo(sec2);
+                // propagate swapped sector locations to child walls
+                // DEV NOTE (11-13-25): This use of the 
+                //      updateWallParentSector() function is flawed
+                //      because there is no swap buffer for the sector
+                //      pointers. Must devise something like that to
+                //      fix visual bugs.
+                swapWallParentSectors(sec1, sec2);
+
+                secSwp = Sectors[j];
+                Sectors[j] = Sectors[j+1];
+                Sectors[j+1] = secSwp;
+			}
+		}
+	}
+}
+// Sorts walls by current distance to player, closest to farthest.
+// Walls are sorted this way to accommodate overdraw optimizations.
+void sortWallsZOrder()
+{
+    updateWallsProx(); 
+	// sort walls here
+	// bubble sort probably sucks for this, but easier to implement quickly
+	wall wallSwp;
+	for (int i = 0; i < numWalls; i++)
+	{
+		for (int j = 0; j < numWalls-1; j++)
+		{
+			if(Walls[j].playerProximity > Walls[j+1].playerProximity)
+			{
+                wallSwp = Walls[j];
+                Walls[j] = Walls[j+1];
+                Walls[j+1] = wallSwp;
+			}
+		}
+	}
+}
+// Renders the current view of the 3D environment
+void drawView()
+{
+    //numDrawCalls = 0;
+    resetDrawnPixels();
+
+	// sort sectors and walls for correct draw order
+    sortSectorsZOrder();
+	sortWallsZOrder();
+
+    for(int i = 0; i < numSectors; i++)
+    {
+        drawSector(&Sectors[i]);
+    }
+
+    //printf("Draw calls this frame: %d\n", numDrawCalls);
 }
