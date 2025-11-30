@@ -260,7 +260,15 @@ bool isPlayerInsideSector(sector* sec)
     bool insideSector = insideZBounds && insideFootprint;
     return insideSector;
 }
-
+// draws a pixel with absolute RGB values
+void drawPixelRGB(int x, int y, int r, int g, int b)
+{
+	glColor3ub(r, g, b);
+	glBegin(GL_POINTS);
+	glVertex2i(x*PIXEL_SCALE+2, y*PIXEL_SCALE+2);
+	glEnd();
+}
+// draws a pixel with a preset color code
 void drawPixel(int x, int y, int color)
 {
 	// rgb[0] is red
@@ -304,6 +312,30 @@ void drawPixel(int x, int y, int color)
 		case 8:
 			// background color of choice (default: dark gray)
 			rgb[0]=75; rgb[1]=75; rgb[2]=75;
+			break;
+		case 9:
+			// pure orange 
+			rgb[0]=255; rgb[1]=127; rgb[2]=0;
+			break;
+		case 10:
+			// dark orange
+			rgb[0]=150; rgb[1]=75; rgb[2]=0;
+			break;
+		case 11:
+			// pure purple
+			rgb[0]=148; rgb[1]=0; rgb[2]=211;
+			break;
+		case 12:
+			// dark purple
+			rgb[0]=74; rgb[1]=0; rgb[2]=106;
+			break;
+		case 13:
+			// pure indigo
+			rgb[0]=75; rgb[1]=0; rgb[2]=130;
+			break;
+		case 14:
+			// dark indigo 
+			rgb[0]=37; rgb[1]=0; rgb[2]=65;
 			break;
 		default:
 			// defaults to white
@@ -418,13 +450,13 @@ void drawWall(int x1, int x2, int by1, int by2, int ty1, int ty2, int color)
             }
 			// debug: draw border of wall in different color
 			// Helpful for visually differentiating walls, esp. those of same color.
-			if(x == x1 || x == x2-1 || y == by || y == ty-1)
-			{
-                drawPixel(x, y, 9);
+			//if(x == x1 || x == x2-1 || y == by || y == ty-1)
+			//{
+            //    drawPixel(x, y, 100);
                 //numDrawCalls++; //debug
-                drawnPixels[x][y] = true;
-				continue;
-			}
+            //    drawnPixels[x][y] = true;
+			//	continue;
+			//}
 			// end debug
 			drawPixel(x, y, color);
             //numDrawCalls++; //debug

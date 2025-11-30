@@ -408,3 +408,11 @@ EngineMain.c:200:28: error: invalid initializer
 ## Error Log - Sat 2025-11-29 15:47:33 EST ##
 ## Error Log - Sat 2025-11-29 15:48:16 EST ##
 ## Error Log - Sat 2025-11-29 15:49:29 EST ##
+## Error Log - Sat 2025-11-29 16:50:07 EST ##
+Render.c:264:32: error: expected ‘;’, ‘,’ or ‘)’ before ‘int’
+  264 | void drawPixelRGB(int x, int y int r, int g, int b)
+      |                                ^~~
+## Error Log - Sat 2025-11-29 16:50:35 EST ##
+## Error Log - Sat 2025-11-29 16:55:20 EST ##
+## Error Log - Sat 2025-11-29 16:56:20 EST ##
+## Error Log - Sat 2025-11-29 17:08:52 EST ##
